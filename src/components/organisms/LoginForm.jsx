@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../../services/api.js";
 
 function LoginForm() {
     
@@ -8,10 +9,20 @@ function LoginForm() {
   return (
 
     <>
-    <form className="login-form" onSubmit={function(e){
-        e.preventDefault()
-        setPassword("")
-        setEmail("");
+    <form className="login-form" onSubmit={async(e)=>{
+        e.preventDefault();
+        try{
+            const res = await api.post("/api/auth/login",{
+                email,
+                password
+            })
+            localStorage.setItem("token",res.data.token);
+            console.log("Login success:",res.data)
+        }catch(error){
+            console.error("Login failed:", error.response?.data || error.message)
+        }
+         setEmail("");
+        setPassword("");
     }} >
         <h1>Login</h1>
         <input type="email" 
