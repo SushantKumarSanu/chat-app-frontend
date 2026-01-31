@@ -89,7 +89,9 @@ input, button, textarea, select {
   cursor: pointer;
   margin-bottom: 0;      
 }
-
+.chats{
+  background-color: #1e85f7;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
