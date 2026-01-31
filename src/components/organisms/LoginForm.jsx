@@ -39,7 +39,7 @@ function LoginForm() {
             <input type="checkbox" id="rememberme" className="checkbox" />
             <label htmlFor="rememberme">Remember Me</label>
         </div>
-        <button type="submit" >Submit</button>
+        <button type="submit">Submit</button>
     </form>
     </>
   )
