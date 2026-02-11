@@ -89,8 +89,38 @@ input, button, textarea, select {
   cursor: pointer;
   margin-bottom: 0;      
 }
-.chats{
+.chatpage-container{
+  display: flex;
+}
+.username {
+  background-color:grey;
+}
+.chatlist h2{
+  color: white;
+  margin-bottom: 10px;
+}
+.chatlist{
+  background-color: #8eb9ec;
+  width: 30vw;
+  height: 85vh;
+  overflow: auto;
+}
+.chatlist h1{
   background-color: #1e85f7;
+}
+.chat{
+  color: #000000;
+  height: 10vh;
+  /* background-color: aqua; */
+}
+.chat-window{
+  flex: 1;
+  background-color: red;
+  color:white;
+
+}
+.loading{
+  color: white;
 }
 
 @media (prefers-reduced-motion: reduce) {
