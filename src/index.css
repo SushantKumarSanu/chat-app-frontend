@@ -91,6 +91,7 @@ input, button, textarea, select {
 }
 .chatpage-container{
   display: flex;
+  color: white;
 }
 .username {
   background-color:grey;
@@ -100,13 +101,13 @@ input, button, textarea, select {
   margin-bottom: 10px;
 }
 .chatlist{
-  background-color: #8eb9ec;
+  /* background-color: #8eb9ec; */
   width: 30vw;
   height: 85vh;
   overflow: auto;
 }
 .chatlist h1{
-  background-color: #1e85f7;
+  background-color: whitesmoke;
 }
 .chat{
   color: #000000;
@@ -115,12 +116,46 @@ input, button, textarea, select {
 }
 .chat-window{
   flex: 1;
-  background-color: red;
-  color:white;
-
+  /* background-color: red; */
+  color:rgba(245, 245, 245, 0.933);
+  padding: 4px 20px;
+}
+.chat-window h2{
+  margin-bottom: 20px ;
 }
 .loading{
   color: white;
+}
+.message-container{
+  display: flex;
+  flex-direction: column;
+}
+.message{
+  width: 20vw;
+  padding: 2px 10px ;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  background-color: #353935;
+}
+.message h4{
+  margin-top: 5px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.my-message{
+  align-self: flex-end;
+  
+}
+.my-message h4{
+  display: none;
+}
+.message h5{
+  font-weight: 500;
+}
+.others-message {
+  align-self: flex-start;
+  color: black;
+  background: white;
 }
 
 @media (prefers-reduced-motion: reduce) {
