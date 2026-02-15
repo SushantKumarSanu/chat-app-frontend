@@ -1,19 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import api from '../../services/api.js';
 
 function ChatWindow({activeChat,user,messages,messageLoading,onNewMessage}){
     const [message,setMessage] = useState("")
     const [sending,setSending] = useState(false)
-
     const otherusers =  activeChat?.users?.find(
                 u=> u._id !==user?._id
             )||{};
+    const messageEndRef = useRef(null);
+    const scrollToBottom = ()=>{
+        messageEndRef.current?.scrollIntoView({behavior:"smooth"});
+    }
 
     useEffect(()=>{
         setMessage("");
-    },[activeChat?._id]);        
+    },[activeChat?._id]);
 
+    useEffect(()=>{
+        scrollToBottom();
+    },[messages])
                 
     return<>
         {!(activeChat?._id)?(<div > <h2>Select a Chat</h2></div>): 
@@ -34,6 +40,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,onNewMessage}){
                     </div>
                     )
                 })}
+                <div ref={messageEndRef}/>
             </div>)}
             <div className="send-message">
                 <form onSubmit={async(e)=>{
