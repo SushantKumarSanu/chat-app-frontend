@@ -2,7 +2,7 @@ import { useState } from "react";
 import api from "../../services/api.js";
 import { useNavigate } from "react-router-dom";
 
-function LoginForm() {
+function LoginForm({setUser}) {
     
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
@@ -19,8 +19,7 @@ function LoginForm() {
                 password
             })
             localStorage.setItem("token",res.data.token);
-            console.log("Login success:",res.data);
-            navigate("/chat");
+            setUser(res.data.user);
         }catch(error){
             console.error("Login failed:", error.response?.data || error.message)
         }

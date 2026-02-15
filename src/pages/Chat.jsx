@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import api from "../services/api.js";
+import { socket } from "../services/socket.js";
 import ChatSidebar from "../components/organisms/ChatSidebar.jsx";
 import ChatWindow from "../components/organisms/ChatWindow.jsx";
 
-function Chat(){
+function Chat({user}){
     const [loading,setloading] = useState(true)
     const [messageLoading,setmessageLoading] = useState(false) 
     const [activeChat,setActiveChat] = useState(null)
     const [chatlist,setChatlist] =useState([])
-    const [user,setUser] = useState(null)
     const [messages,setMessages] = useState([])
     const onNewMessage = (newMsg)=>{
         setMessages(prev=>[...prev,newMsg]);
@@ -17,12 +17,8 @@ function Chat(){
     useEffect(() => { 
         (async()=>{
             try{
-                const[chatsRes,userRes] = await Promise.all([
-                    api.get("/api/chat/chats"),
-                    api.get("/api/protected/profile")
-                ])
+                const chatsRes = await api.get("/api/chat/chats")
                 setChatlist(chatsRes.data)
-                setUser(userRes.data.user);
             }catch(error){
                 console.error(error.message);
             }finally{
@@ -34,7 +30,6 @@ function Chat(){
 
     useEffect(()=>{
         if(!activeChat?._id) return;
-        setMessages([]);
         setmessageLoading(true);
 
           

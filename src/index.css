@@ -90,6 +90,9 @@ input, button, textarea, select {
   cursor: pointer;
   margin-bottom: 0;      
 }
+.load{
+  color: aliceblue;
+}
 .chat-main{
   height: 100vh;
   overflow: auto;

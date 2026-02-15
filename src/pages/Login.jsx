@@ -1,11 +1,11 @@
 import LoginForm from "../components/organisms/LoginForm.jsx"
 
 
-function Login(){
+function Login({setUser}){
     return(
         <div className="login-container">
             
-            <LoginForm/>
+            <LoginForm setUser={setUser}/>
             
 
         </div>
