@@ -1,7 +1,18 @@
-function ChatWindow({activeChat,user,messages,messageLoading}){
+import { useEffect, useState } from 'react';
+import 'remixicon/fonts/remixicon.css';
+import api from '../../services/api.js';
+
+function ChatWindow({activeChat,user,messages,messageLoading,onNewMessage}){
+    const [message,setMessage] = useState("")
+    const [sending,setSending] = useState(false)
+
     const otherusers =  activeChat?.users?.find(
                 u=> u._id !==user?._id
             )||{};
+
+    useEffect(()=>{
+        setMessage("");
+    },[activeChat?._id]);        
 
                 
     return<>
@@ -19,12 +30,39 @@ function ChatWindow({activeChat,user,messages,messageLoading}){
                         <h3>{msg.content}</h3>
                         <h4>{senderName}</h4>
                         <h5>{new Date(msg.createdAt).toLocaleString()}</h5>
+              
                     </div>
                     )
                 })}
-
-               
             </div>)}
+            <div className="send-message">
+                <form onSubmit={async(e)=>{
+                    e.preventDefault();
+                    const trimmed = message.trim();
+                    if (!trimmed) return;
+                    setSending(true);
+                    try{
+                        const res = await api.post("/api/messages/messages",{
+                            content:trimmed,
+                            chatId:activeChat?._id 
+                        });
+                        onNewMessage(res.data);
+                        setMessage("")
+
+
+                    }catch(error){
+                        console.error("Message send failed:", error.response?.data || error.message);
+                    }finally{
+                        setSending(false)
+                    }
+                }}>
+                <input type="text" value={message} onChange={(e)=>{
+                    setMessage(e.target.value);
+                }}  />
+                <button type='submit' disabled={sending}><i className="ri-send-plane-fill"></i></button>                    
+                </form>
+
+            </div>
         </div>
         </>)
         }
@@ -33,4 +71,3 @@ function ChatWindow({activeChat,user,messages,messageLoading}){
 
 
 export default ChatWindow;
-// activeChat?activeChat.users.username:"Select a chat"

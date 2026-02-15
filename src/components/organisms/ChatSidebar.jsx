@@ -13,7 +13,6 @@ function ChatSidebar({chatlist,user,loading,onSelectChat}){
             );
 
         return <div key={elem._id} className="chat" onClick={()=>{
-            console.log(elem)
             onSelectChat(elem);
         }}><h1>{otherusers?.username??"Guest"}</h1></div>
 

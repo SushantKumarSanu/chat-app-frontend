@@ -10,7 +10,9 @@ function Chat(){
     const [chatlist,setChatlist] =useState([])
     const [user,setUser] = useState(null)
     const [messages,setMessages] = useState([])
-
+    const onNewMessage = (newMsg)=>{
+        setMessages(prev=>[...prev,newMsg]);
+    };
 
     useEffect(() => { 
         (async()=>{
@@ -28,6 +30,7 @@ function Chat(){
             }
         })();
     },[]);
+
 
     useEffect(()=>{
         if(!activeChat?._id) return;
@@ -49,10 +52,10 @@ function Chat(){
 
             }
         })();
-    },[activeChat?._id])
+    },[activeChat?._id]);
 
 
-
+ 
     return <>
     {loading?(<div className="loading">Loading...</div>):
     (
@@ -61,7 +64,7 @@ function Chat(){
 
     <div className="chatpage-container">
         <ChatSidebar chatlist={chatlist} user={user} loading={loading} onSelectChat={setActiveChat}/>        
-        <ChatWindow messages={messages} messageLoading={messageLoading} activeChat={activeChat} user={user}/>
+        <ChatWindow  messages={messages} onNewMessage={onNewMessage} messageLoading={messageLoading} activeChat={activeChat} user={user}/>
         
     </div>
     </>)
