@@ -53,15 +53,14 @@ function ChatWindow({activeChat,user,messages,messageLoading,onNewMessage}){
                             content:trimmed,
                             chatId:activeChat?._id 
                         });
-                        onNewMessage(res.data);
-                        setMessage("")
+                        setMessage("");
 
 
                     }catch(error){
                         console.error("Message send failed:", error.response?.data || error.message);
                     }finally{
                         setSending(false)
-                    }
+                    };
                 }}>
                 <input type="text" value={message} onChange={(e)=>{
                     setMessage(e.target.value);

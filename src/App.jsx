@@ -1,10 +1,11 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "./services/api.js";
-import Login from "./pages/Login.jsx"
-import Chat from "./pages/chat.jsx"
-import AuthGuard from "./components/AuthGuard.jsx"
-import GuestGuard from "./components/GuestGuard.jsx"
+import { socket } from "./services/socket.js";
+import Login from "./pages/Login.jsx";
+import Chat from "./pages/chat.jsx";
+import AuthGuard from "./components/AuthGuard.jsx";
+import GuestGuard from "./components/GuestGuard.jsx";
 
 function App() {
   const [user,setUser] = useState(null);
@@ -21,12 +22,26 @@ function App() {
         setauthLoading(false);
       }; 
     })();
-   },[])
+   },[]);
+   
+   
+  useEffect(()=>{
+    if(!user) return;
+    const token = localStorage.getItem("token");
+    socket.auth = {token};
+    socket.connect();
+
+    socket.on("connected",()=>{
+      console.log("socket authenticated");
+    })
+
+    return ()=>{
+      socket.disconnect();
+    };
+  },[user]);
   
 
-  useEffect(()=>{
-    console.log(user)
-   },[user])
+
 
   if(authLoading) return <div className="load">Loading...</div>
   

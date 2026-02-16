@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../services/api.js";
-import { socket } from "../services/socket.js";
 import ChatSidebar from "../components/organisms/ChatSidebar.jsx";
 import ChatWindow from "../components/organisms/ChatWindow.jsx";
+import { socket } from "../services/socket.js";
 
 function Chat({user}){
     const [loading,setloading] = useState(true)
@@ -23,7 +23,7 @@ function Chat({user}){
                 console.error(error.message);
             }finally{
                 setloading(false);
-            }
+            };
         })();
     },[]);
 
@@ -45,12 +45,35 @@ function Chat({user}){
             setmessageLoading(false);
 
 
-            }
+            };
         })();
     },[activeChat?._id]);
 
+    useEffect(()=>{
+        if(!activeChat?._id) return;
+        socket.emit("join chat",activeChat?._id);
+        socket.on("join chat",()=>{
+            console.log(`joined chat ${activeChat?._id}`);
+        });
 
- 
+    },[activeChat?._id]);
+
+    useEffect(()=>{
+        const handleMessage = (NewMessage)=>{
+            if(NewMessage.chat === activeChat?._id){
+                setMessages(prev=>[...prev,NewMessage]);
+            }else{
+                console.log("new message arrived for another chat");
+            };
+        };
+        socket.on("new message",handleMessage);
+
+        return () => socket.off("new message",handleMessage);
+    },[activeChat?._id]);
+
+
+
+
     return <>
     {loading?(<div className="loading">Loading...</div>):
     (
