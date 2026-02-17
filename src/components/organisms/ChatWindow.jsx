@@ -1,17 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import api from '../../services/api.js';
+import { socket } from '../../services/socket.js';
 
-function ChatWindow({activeChat,user,messages,messageLoading,onNewMessage}){
-    const [message,setMessage] = useState("")
-    const [sending,setSending] = useState(false)
+function ChatWindow({activeChat,user,messages,messageLoading,typingByChat}){
+    const [message,setMessage] = useState("");
+    const [sending,setSending] = useState(false);
+    const [isTyping,setIsTyping] = useState(false);
+    const typingTimeoutRef = useRef(null);
     const otherusers =  activeChat?.users?.find(
                 u=> u._id !==user?._id
             )||{};
     const messageEndRef = useRef(null);
+
+
     const scrollToBottom = ()=>{
         messageEndRef.current?.scrollIntoView({behavior:"smooth"});
-    }
+    };
+
+    useEffect(()=>{
+        return ()=>{
+            if(typingTimeoutRef.current){
+                clearTimeout(typingTimeoutRef.current);
+            }
+        }
+    },[]);
+
 
     useEffect(()=>{
         setMessage("");
@@ -19,13 +33,16 @@ function ChatWindow({activeChat,user,messages,messageLoading,onNewMessage}){
 
     useEffect(()=>{
         scrollToBottom();
-    },[messages])
+    },[messages]);
                 
     return<>
         {!(activeChat?._id)?(<div > <h2>Select a Chat</h2></div>): 
         (
         <><div className="chat-window">
+            <div className="chat-title">
             <h2>{otherusers?.username}</h2>
+            <h3 className="typing">{typingByChat[activeChat?._id] && "typing"}</h3>
+            </div>
             {messageLoading?(<div className="loading">Loading...</div>):
             (<div className="message-container">
                 {messages.map(msg =>{
@@ -64,6 +81,20 @@ function ChatWindow({activeChat,user,messages,messageLoading,onNewMessage}){
                 }}>
                 <input type="text" value={message} onChange={(e)=>{
                     setMessage(e.target.value);
+                    if(!activeChat?._id) return ;
+                    if(!isTyping){
+                        socket.emit("typing",activeChat?._id);
+                        setIsTyping(true);
+                    };
+                    if(typingTimeoutRef.current){
+                        clearTimeout(typingTimeoutRef.current);
+                    }
+                    
+                    typingTimeoutRef.current = setTimeout(()=>{
+                        socket.emit("stop typing",activeChat?._id);
+                        setIsTyping(false);
+                    },2000);
+
                 }}  />
                 <button type='submit' disabled={sending}><i className="ri-send-plane-fill"></i></button>                    
                 </form>

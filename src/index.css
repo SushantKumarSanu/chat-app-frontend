@@ -136,8 +136,15 @@ input, button, textarea, select {
   color:rgba(245, 245, 245, 0.933);
   padding: 4px 20px 0 20px;
 }
-.chat-window h2{
+.chat-title {
+  /* background-color: #1e85f7; */
+  height: 60px;
   margin-bottom: 20px ;
+
+}
+.typing{
+  font-weight: 200;
+  color:white;
 }
 
 .loading{

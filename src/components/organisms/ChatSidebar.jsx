@@ -1,4 +1,4 @@
-function ChatSidebar({chatlist,user,loading,onSelectChat}){
+function ChatSidebar({chatlist,user,loading,onSelectChat,typingByChat}){
 
     
     return<>
@@ -14,7 +14,12 @@ function ChatSidebar({chatlist,user,loading,onSelectChat}){
 
         return <div key={elem._id} className="chat" onClick={()=>{
             onSelectChat(elem);
-        }}><h1>{otherusers?.username??"Guest"}</h1></div>
+        }}>
+            <div>
+            <h1>{otherusers?.username??"Guest"}</h1>
+            <h3 className="typing">{typingByChat[elem._id]&&"typing"}</h3>
+            </div>
+        </div>
 
         })}
     </div>
