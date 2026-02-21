@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../services/api.js";
 import ChatSidebar from "../components/organisms/ChatSidebar.jsx";
 import ChatWindow from "../components/organisms/ChatWindow.jsx";
@@ -6,14 +6,14 @@ import { socket } from "../services/socket.js";
 
 function Chat({user}){
     const [loading,setloading] = useState(true);
+    const joinedChat = useRef(new Set());
     const [messageLoading,setmessageLoading] = useState(false); 
     const [activeChat,setActiveChat] = useState(null);
     const [chatlist,setChatlist] =useState([]);
     const [messages,setMessages] = useState([]);
+    const [unreadByChat,setUnreadByChat] = useState({});
     const [typingByChat,setTypingByChat] = useState({});
-    const onNewMessage = (newMsg)=>{
-        setMessages(prev=>[...prev,newMsg]);
-    };
+
 
     useEffect(() => { 
         (async()=>{
@@ -31,9 +31,7 @@ function Chat({user}){
 
     useEffect(()=>{
         if(!activeChat?._id) return;
-        setmessageLoading(true);
-
-          
+        setmessageLoading(true);          
         (async()=>{
             try{
                 const messages = await api.get(`/api/messages/messages/${activeChat?._id}`);
@@ -52,13 +50,13 @@ function Chat({user}){
 
     useEffect(()=>{
         if(chatlist.length===0) return;
-        const joined = new Set();
+
         chatlist.forEach((chat)=>{
-            if(!joined.has(chat._id)){
+            if(!joinedChat.current.has(chat._id)){
             socket.emit("join chat",chat._id);
-            joined.add(chat._id);
-            }
-        });
+            joinedChat.current.add(chat._id);
+            };
+        });     
     },[chatlist]);
 
     useEffect(()=>{
@@ -66,12 +64,29 @@ function Chat({user}){
             if(NewMessage.chat === activeChat?._id){
                 setMessages(prev=>[...prev,NewMessage]);
             }else{
-                console.log("new message arrived for another chat");
-            };
-        };
+                setUnreadByChat(prev=>({
+                    ...prev,
+                    [NewMessage.chat] : {
+                        count:(prev[NewMessage.chat]?.count|| 0 ) + 1,
+                        content : NewMessage.content
+                    }
+                }))
+            }
+        }
         socket.on("new message",handleMessage);
 
+
         return () => socket.off("new message",handleMessage);
+    },[activeChat?._id]);
+
+    useEffect(()=>{
+        if(!activeChat?._id) return;
+        setUnreadByChat(prev=>{
+            if(!prev[activeChat?._id]) return prev;
+            const copy = {...prev};
+            delete copy[activeChat._id];
+            return copy;
+        });       
     },[activeChat?._id]);
 
     useEffect(()=>{
@@ -96,6 +111,11 @@ function Chat({user}){
         }
     },[]);
 
+
+    useEffect(()=>{
+        console.log(unreadByChat)
+    },[unreadByChat]);
+
     return <>
     {loading?(<div className="loading">Loading...</div>):
     (
@@ -103,8 +123,8 @@ function Chat({user}){
     <div className="username"><h1>{user?.username}</h1></div>
 
     <div className="chatpage-container">
-        <ChatSidebar chatlist={chatlist} typingByChat={typingByChat}  user={user} loading={loading} onSelectChat={setActiveChat}/>        
-        <ChatWindow  messages={messages}typingByChat={typingByChat} onNewMessage={onNewMessage} messageLoading={messageLoading} activeChat={activeChat} user={user}/>
+        <ChatSidebar chatlist={chatlist} typingByChat={typingByChat} unreadByChat={unreadByChat} user={user} loading={loading} onSelectChat={setActiveChat}/>        
+        <ChatWindow  messages={messages}typingByChat={typingByChat}  messageLoading={messageLoading} activeChat={activeChat} user={user}/>
         
     </div>
     </>)

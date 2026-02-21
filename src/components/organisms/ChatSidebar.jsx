@@ -1,10 +1,10 @@
-function ChatSidebar({chatlist,user,loading,onSelectChat,typingByChat}){
+function ChatSidebar({chatlist,user,loading,onSelectChat,typingByChat,unreadByChat}){
 
     
     return<>
 
     <div className="chatlist">
-        <h2>Chatlist</h2>
+        <h1>Chatlist</h1>
         {
         chatlist?.map((elem)=>{
 
@@ -15,10 +15,15 @@ function ChatSidebar({chatlist,user,loading,onSelectChat,typingByChat}){
         return <div key={elem._id} className="chat" onClick={()=>{
             onSelectChat(elem);
         }}>
-            <div>
-            <h1>{otherusers?.username??"Guest"}</h1>
-            <h3 className="typing">{typingByChat[elem._id]&&"typing"}</h3>
+
+            <div className="chat-name">
+            <h2>{otherusers?.username??"Guest"}</h2>
+             {typingByChat[elem._id] && <h3 className="typing">typing</h3>}
+            {unreadByChat[elem._id]?.count >0  && <h3 className="unread-count">{unreadByChat[elem._id].count}</h3>}
             </div>
+            {unreadByChat[elem._id]?.content && <p className="message-prev">{unreadByChat[elem._id].content}</p>}
+            
+            
         </div>
 
         })}
@@ -28,3 +33,5 @@ function ChatSidebar({chatlist,user,loading,onSelectChat,typingByChat}){
 
 
 export default ChatSidebar;
+
+

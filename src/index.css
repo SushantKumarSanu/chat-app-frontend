@@ -107,23 +107,62 @@ input, button, textarea, select {
   height: 50px;
   background-color:grey;
 }
-.chatlist h2{
+.chatlist h1{
   color: white;
   margin-bottom: 10px;
 }
 .chatlist{
+  /* background-color: aqua; */
   /* background-color: #8eb9ec; */
   width: 30vw;
   height: 85vh;
   overflow-y: auto;
 }
-.chatlist h1{
-  background-color: whitesmoke;
-}
+
 .chat{
-  color: #000000;
-  height: 10vh;
+  /* color: #000000; */
+  min-height: 7vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #555;
+  margin-bottom: 15px;
+  padding: 0 10px 0 5px;
   /* background-color: aqua; */
+}
+
+.chat-name{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.message-prev{
+  align-items: flex-start;
+  color: black;
+  border-radius: 12px;
+  font-size: 15px;
+  padding: 2px 8px;
+  background-color: rgb(106, 161, 23);
+  font-weight: 700;
+  width: fit-content;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+.unread-count{
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  background-color: rgb(106, 161, 23);
+  border-radius: 20px
+
+}
+
+.typing{
+  font-weight: 200;
+  font-style: italic;
+  letter-spacing: 0.5px;
+  color:rgb(103, 255, 103);
+  font-weight: 400;
 }
 .chat-window{
   display: flex;
@@ -142,10 +181,7 @@ input, button, textarea, select {
   margin-bottom: 20px ;
 
 }
-.typing{
-  font-weight: 200;
-  color:white;
-}
+
 
 .loading{
   color: white;
