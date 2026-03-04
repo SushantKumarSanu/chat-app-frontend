@@ -120,8 +120,12 @@ function Chat({user}){
     {loading?(<div className="loading">Loading...</div>):
     (
     <>
-    <div className="username"><h1>{user?.username}</h1></div>
+    <div className="aurora-bg">
+        <div className="blob1"></div>
+        <div className="blob2"></div>
+        <div className="blob3"></div>
 
+    </div>
     <div className="chatpage-container">
         <ChatSidebar chatlist={chatlist} typingByChat={typingByChat} unreadByChat={unreadByChat} user={user} loading={loading} onSelectChat={setActiveChat}/>        
         <ChatWindow  messages={messages}typingByChat={typingByChat}  messageLoading={messageLoading} activeChat={activeChat} user={user}/>

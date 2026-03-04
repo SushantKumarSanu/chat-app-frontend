@@ -2,32 +2,40 @@ function ChatSidebar({chatlist,user,loading,onSelectChat,typingByChat,unreadByCh
 
     
     return<>
-
-    <div className="chatlist">
-        <h1>Chatlist</h1>
-        {
-        chatlist?.map((elem)=>{
-
-            const otherusers = elem.users.find(
-                u => u._id !== user._id
-            );
-
-        return <div key={elem._id} className="chat" onClick={()=>{
-            onSelectChat(elem);
-        }}>
-
-            <div className="chat-name">
-            <h2>{otherusers?.username??"Guest"}</h2>
-             {typingByChat[elem._id] && <h3 className="typing">typing</h3>}
-            {unreadByChat[elem._id]?.count >0  && <h3 className="unread-count">{unreadByChat[elem._id].count}</h3>}
-            </div>
-            {unreadByChat[elem._id]?.content && <p className="message-prev">{unreadByChat[elem._id].content}</p>}
-            
-            
+    <div className="sidebar">
+        <div className="sidebar-header">
+            <div className="avatar">PFL</div>
+            <span className="name">{user?.username}</span>
         </div>
+            {
+            chatlist?.map((elem)=>{
 
-        })}
-    </div>
+                const otherusers = elem.users.find(
+                    u => u._id !== user._id
+                );
+
+            return <div key={elem._id} className="chat" onClick={()=>{
+                onSelectChat(elem);
+            }}>
+
+                <div className="avatar-wrap">
+                    <div className="avatar">PFL</div>
+                    <span className="status-dot online"></span>
+                </div>
+                <div className="contact-info">
+                    <div className="contact-top">
+                        <span className="name">{otherusers?.username??"Guest"}</span>
+                        {unreadByChat[elem._id]?.count >0 && <span className="unread-badge">{unreadByChat[elem._id].count}</span>}
+                    </div>
+                    {typingByChat[elem._id]
+                    ?<span className="typing">typing</span>
+                    :unreadByChat[elem._id]?.content && <span className="message-prev">{unreadByChat[elem._id].content}</span>}
+
+                </div>
+            </div>
+
+            })}
+        </div> 
     </>
 }
 
