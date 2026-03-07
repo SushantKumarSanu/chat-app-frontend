@@ -40,26 +40,42 @@ function ChatWindow({activeChat,user,messages,messageLoading,typingByChat}){
         (
         <><div className="chat-window">
             <div className="chat-title">
-            <h2>{otherusers?.username}</h2>
-            <h3 className="typing">{typingByChat[activeChat?._id] && "typing"}</h3>
+                <div className='avatar-wrap'>
+                    <div className='avatar'>SS</div>
+                    <span className="status-dot online"></span>
+                </div>
+                <div className='chat-header-info'>
+                    <span className='name'>{otherusers?.username}</span>
+                    
+                    {typingByChat[activeChat?._id] &&(
+                    <span className='typing'>✎ typing...</span>)}
+                </div>
             </div>
             {messageLoading?(<div className="loading">Loading...</div>):
             (<div className="message-container">
                 {messages.map(msg =>{
                     const isMine = msg.sender?._id===user?._id;
                     const senderName = msg.sender?.username || "Unknown";
-                    return(
-                    <div className={`message ${isMine?'my-message':'others-message'}`} key={msg._id}>
-                        <h3>{msg.content}</h3>
-                        <h4>{senderName}</h4>
-                        <h5>{new Date(msg.createdAt).toLocaleString()}</h5>
-              
+                    return<>
+                    <div className={`bubble-wrap ${isMine?'sent-wrap':'received-wrap'}`} key={msg._id}>
+                        {!isMine && <span className="bubble-sender">{senderName}</span>}
+                        <div className={`bubble ${isMine?'sent':'received'}`}>
+                        {msg.content}
+                        <div className="bubble-footer">
+                            <span className="bubble-time">{new Date(msg.createdAt).toLocaleString()}</span>
+                        </div>
+                        </div>
                     </div>
-                    )
+                       
+                </>
                 })}
+                
                 <div ref={messageEndRef}/>
+                {typingByChat[activeChat?._id]?.includes(otherusers?._id) && (<div class="typing-bubble" id="chat-typing-bubble">
+                    <span></span><span></span><span></span>
+                    </div>)} 
             </div>)}
-            <div className="send-message">
+    
                 <form onSubmit={async(e)=>{
                     e.preventDefault();
                     const trimmed = message.trim();
@@ -100,7 +116,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,typingByChat}){
                 </form>
 
             </div>
-        </div>
+
         </>)
         }
     </>             
@@ -108,3 +124,5 @@ function ChatWindow({activeChat,user,messages,messageLoading,typingByChat}){
 
 
 export default ChatWindow;
+            // <h3 className="typing">{typingByChat[activeChat?._id] && "typing"}</h3>
+            // <h2>{otherusers?.username}</h2>
