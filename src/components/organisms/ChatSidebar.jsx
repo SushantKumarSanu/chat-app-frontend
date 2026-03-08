@@ -10,9 +10,11 @@ function ChatSidebar({chatlist,user,loading,onSelectChat,typingByChat,unreadByCh
             {
             chatlist?.map((elem)=>{
 
-                const otherusers = elem.users.find(
-                    u => u._id !== user._id
-                );
+                const otherusers = user?._id
+                    ? elem.users.find(u => String(u._id) !== String(user._id))
+                    :null;
+                console.log(elem.users,"elem users")
+                console.log(otherusers,"other users")
 
             return <div key={elem._id} className="chat" onClick={()=>{
                 onSelectChat(elem);
