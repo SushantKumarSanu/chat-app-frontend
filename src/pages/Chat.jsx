@@ -12,14 +12,31 @@ function Chat({user}){
     const [chatlist,setChatlist] =useState([]);
     const [messages,setMessages] = useState([]);
     const [unreadByChat,setUnreadByChat] = useState({});
-    const [typingByChat,setTypingByChat] = useState({});
+    const [otherUserActivity,setotherUserActivity] = useState({});
 
 
     useEffect(() => { 
         (async()=>{
             try{
+                const usersInitalActvivties = {}
                 const chatsRes = await api.get("/api/chat/chats")
-                setChatlist(chatsRes.data)
+                setChatlist(chatsRes.data);
+
+                chatsRes.data.forEach(chat => {
+
+                    const otherusers = chat.users.find(
+                u=> String(u._id) !==String(user?._id)
+                )||{};
+                if(otherusers?._id){
+                    usersInitalActvivties[otherusers._id] = {
+                        isOnline:otherusers.isOnline,
+                        typing:false
+                    }
+                }
+
+                });
+                setotherUserActivity(usersInitalActvivties);
+
             }catch(error){
                 console.error(error.message);
             }finally{
@@ -90,31 +107,57 @@ function Chat({user}){
     },[activeChat?._id]);
 
     useEffect(()=>{
-        const handleTyping = ({chatId,user})=>{
-            setTypingByChat(prev=>({
+        const handleOnline = ({user})=>{
+             setotherUserActivity(prev=>({
                 ...prev,
-                [chatId]:user
+                [String(user)]:{
+                    ...prev[user],
+                    isOnline:true
+                }
             }));
         };
-        const handleStopTyping = ({chatId})=>{
-            setTypingByChat(prev=>{
-                const copy = {...prev};
-                delete copy[chatId];
-                return copy;
-            });
+
+        const handleOffline = ({user})=>{
+            setotherUserActivity(prev=>({
+                ...prev,
+                [String(user)]:{
+                    ...prev[user],
+                    isOnline:false
+                }
+            }));
+        }
+        const handleTyping = ({chatId,user})=>{
+            setotherUserActivity(prev=>({
+                ...prev,
+                [user]:{
+                 ...prev[user],
+                  typing:chatId
+                }
+            }));
         };
+        const handleStopTyping = ({user})=>{
+             setotherUserActivity(prev=>({
+                ...prev,
+                [user]:{
+                    ...prev[user],
+                    typing:undefined
+                }
+            }));
+        };
+        socket.on("user online",handleOnline);
+        socket.on("user offline",handleOffline);
         socket.on("typing",handleTyping);
         socket.on("stop typing",handleStopTyping);
         return ()=> {
+            socket.off("user online",handleOnline);
+            socket.off("user offline",handleOffline);
             socket.off("typing",handleTyping);
             socket.off("stop typing",handleStopTyping);
         }
     },[]);
-
-
-    useEffect(()=>{
-        console.log(unreadByChat)
-    },[unreadByChat]);
+useEffect(()=>{
+    console.log('others users activity is:',otherUserActivity);
+},[otherUserActivity])
 
     return <>
     {loading?(<div className="loading">Loading...</div>):
@@ -127,8 +170,8 @@ function Chat({user}){
 
     </div>
     <div className="chatpage-container">
-        <ChatSidebar chatlist={chatlist} typingByChat={typingByChat} unreadByChat={unreadByChat} user={user} loading={loading} onSelectChat={setActiveChat}/>        
-        <ChatWindow  messages={messages}typingByChat={typingByChat}  messageLoading={messageLoading} activeChat={activeChat} user={user}/>
+        <ChatSidebar chatlist={chatlist} otherUserActivity={otherUserActivity} unreadByChat={unreadByChat} user={user} loading={loading} onSelectChat={setActiveChat}/>        
+        <ChatWindow  messages={messages}otherUserActivity={otherUserActivity}  messageLoading={messageLoading} activeChat={activeChat} user={user}/>
         
     </div>
     </>)

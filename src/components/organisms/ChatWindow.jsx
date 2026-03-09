@@ -3,13 +3,13 @@ import 'remixicon/fonts/remixicon.css';
 import api from '../../services/api.js';
 import { socket } from '../../services/socket.js';
 
-function ChatWindow({activeChat,user,messages,messageLoading,typingByChat}){
+function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity}){
     const [message,setMessage] = useState("");
     const [sending,setSending] = useState(false);
     const [isTyping,setIsTyping] = useState(false);
     const typingTimeoutRef = useRef(null);
     const otherusers =  activeChat?.users?.find(
-                u=> u._id !==user?._id
+                u=> String(u._id) !==String(user?._id)
             )||{};
     const messageEndRef = useRef(null);
 
@@ -47,8 +47,12 @@ function ChatWindow({activeChat,user,messages,messageLoading,typingByChat}){
                 <div className='chat-header-info'>
                     <span className='name'>{otherusers?.username}</span>
                     
-                    {typingByChat[activeChat?._id] &&(
-                    <span className='typing'>✎ typing...</span>)}
+                    {otherUserActivity[otherusers?._id]?.typing ?
+                    <span className='typing'>✎ typing...</span>
+                    :
+                    otherUserActivity[otherusers?._id]?.isOnline&&
+                    (<span className="chat-status-text" id="chat-status-text">● Online</span>)
+                    }
                 </div>
             </div>
             {messageLoading?(<div className="loading">Loading...</div>):
@@ -71,7 +75,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,typingByChat}){
                 })}
                 
                 <div ref={messageEndRef}/>
-                {typingByChat[activeChat?._id]?.includes(otherusers?._id) && (<div class="typing-bubble" id="chat-typing-bubble">
+                {otherUserActivity[otherusers?._id]?.typing && (<div className="typing-bubble" id="chat-typing-bubble">
                     <span></span><span></span><span></span>
                     </div>)} 
             </div>)}
