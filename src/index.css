@@ -267,7 +267,7 @@ input, button, textarea, select {
     white-space: nowrap;
   }
 .message-prev{
-    font-size: 16px;
+    font-size: 15px;
     /* color: rgba(255,255,255,0.38); */
     overflow: hidden;
     text-overflow: ellipsis;
