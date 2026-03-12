@@ -67,6 +67,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
                         {msg.content}
                         <div className="bubble-footer">
                             <span className="bubble-time">{new Date(msg.createdAt).toLocaleString()}</span>
+                            {isMine && msg.deliveredTo.includes(otherusers?._id) && <span className='tick'>✓✓</span>}
                         </div>
                         </div>
                     </div>

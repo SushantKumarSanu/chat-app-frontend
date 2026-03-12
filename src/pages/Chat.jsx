@@ -80,7 +80,8 @@ function Chat({user}){
         const handleMessage = (NewMessage)=>{
             if(NewMessage.chat === activeChat?._id){
                 setMessages(prev=>[...prev,NewMessage]);
-            }else{
+            }
+            else{
                 setUnreadByChat(prev=>({
                     ...prev,
                     [NewMessage.chat] : {
@@ -89,12 +90,36 @@ function Chat({user}){
                     }
                 }))
             }
+            if(String(NewMessage.sender._id) !== String(user._id)){
+            socket.emit("message recieved",{message:NewMessage._id,user:user?._id})
+            }
         }
         socket.on("new message",handleMessage);
 
 
-        return () => socket.off("new message",handleMessage);
+        return () => {
+            socket.off("new message",handleMessage)
+
+        };
     },[activeChat?._id]);
+    useEffect(()=>{
+        const handleDelivery = ({message,user})=>{
+            return setMessages(prev=>
+            prev.map(msg=>{
+                if(String(msg._id)===String(message)){
+                    return {...msg,
+                        deliveredTo:[...msg.deliveredTo,user]
+                    };    
+                }
+                return msg;
+            })
+           );
+        };
+        socket.on("message recieved",handleDelivery)
+
+
+        return ()=> socket.off("message recieved",handleDelivery);
+    },[]);
 
     useEffect(()=>{
         if(!activeChat?._id) return;
@@ -155,9 +180,12 @@ function Chat({user}){
             socket.off("stop typing",handleStopTyping);
         }
     },[]);
-useEffect(()=>{
-    console.log('others users activity is:',otherUserActivity);
-},[otherUserActivity])
+
+
+    // useEffect(()=>{
+    //     console.log("messages:",messages)
+    // },[messages])
+
 
     return <>
     {loading?(<div className="loading">Loading...</div>):
