@@ -13,7 +13,7 @@ function ChatSidebar({chatlist,user,loading,onSelectChat,otherUserActivity,unrea
                 const otherusers = user?._id
                     ? elem.users.find(u => String(u._id) !== String(user._id))
                     :null;
-
+                const lastContent = elem.lastMessage?.messageId?.content|| elem.lastMessage?.content
             return <div key={elem._id} className="chat" onClick={()=>{
                 onSelectChat(elem);
             }}>
@@ -30,7 +30,7 @@ function ChatSidebar({chatlist,user,loading,onSelectChat,otherUserActivity,unrea
                     </div>
                     {otherUserActivity[otherusers?._id]?.typing
                     ?<span className="typing">typing</span>
-                    :unreadByChat[elem._id]?.content?<span className="message-prev">{unreadByChat[elem._id].content}</span> : <span className="message-prev">{elem.lastMessage.content}</span> }
+                    :unreadByChat[elem._id]?.content?<span className="message-prev">{unreadByChat[elem._id].content}</span> : <span className="message-prev">{lastContent??"no messages yet"}</span> }
 
                 </div>
             </div>

@@ -60,6 +60,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
                 {messages.map(msg =>{
                     const isMine = msg.sender?._id===user?._id;
                     const senderName = msg.sender?.username || "Unknown";
+                    const lastMessageId =activeChat?.lastMessage?.messageId?._id ||activeChat?.lastMessage?.messageId;
                     return<>
                     <div className={`bubble-wrap ${isMine?'sent-wrap':'received-wrap'}`} key={msg._id}>
                         {!isMine && <span className="bubble-sender">{senderName}</span>}
@@ -67,7 +68,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
                         {msg.content}
                         <div className="bubble-footer">
                             <span className="bubble-time">{new Date(msg.createdAt).toLocaleString()}</span>
-                            {isMine && msg.deliveredTo.includes(otherusers?._id) && <span className='tick'>✓✓</span>}
+                            {isMine && msg.deliveredTo.includes(otherusers?._id) && <span className={`tick ${lastMessageId===msg._id&&activeChat?.lastMessage?.readBy.includes(otherusers?._id)&&'read'} `} >✓✓</span>}
                         </div>
                         </div>
                     </div>

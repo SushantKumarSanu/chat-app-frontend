@@ -21,6 +21,7 @@ function Chat({user}){
                 const usersInitalActvivties = {}
                 const chatsRes = await api.get("/api/chat/chats")
                 setChatlist(chatsRes.data);
+                console.log(chatsRes.data)
 
                 chatsRes.data.forEach(chat => {
 
@@ -80,6 +81,7 @@ function Chat({user}){
         const handleMessage = (NewMessage)=>{
             if(NewMessage.chat === activeChat?._id){
                 setMessages(prev=>[...prev,NewMessage]);
+                String(NewMessage.sender._id) !== String(user._id) && socket.emit("message read",{message:NewMessage,user:user?._id});
             }
             else{
                 setUnreadByChat(prev=>({
@@ -89,7 +91,25 @@ function Chat({user}){
                         content : NewMessage.content
                     }
                 }))
+
+          
+               
+
             }
+              setChatlist(prev=>
+                prev.map(chat=>
+                    chat._id === NewMessage.chat
+                    ?{
+                        ...chat,
+                        lastMessage:{
+                            ...chat.lastMessage,
+                            messageId:NewMessage
+                        }
+                    }
+                    : chat
+                )
+            );
+            
             if(String(NewMessage.sender._id) !== String(user._id)){
             socket.emit("message recieved",{message:NewMessage._id,user:user?._id})
             }
@@ -102,6 +122,31 @@ function Chat({user}){
 
         };
     },[activeChat?._id]);
+
+    useEffect(()=>{
+        const handleReadReciept = ({updatedChat})=>{
+            setChatlist(prev=>
+                prev.map(chat=>
+                    chat._id === updatedChat._id
+                    ?{...chat,lastMessage:updatedChat.lastMessage}
+                    :chat
+                )
+            );
+            console.log("running")
+            setActiveChat(prev=>
+                prev._id === updatedChat._id
+                ? {...prev,lastMessage:updatedChat.lastMessage}
+                : prev
+            );
+        };
+        socket.on("message read",handleReadReciept);
+        return () => socket.off("message read",handleReadReciept);
+    },[activeChat?._id])
+useEffect(()=>{
+    console.log("this is chatlist:",chatlist);
+},[chatlist])
+
+
     useEffect(()=>{
         const handleDelivery = ({message,user})=>{
             return setMessages(prev=>

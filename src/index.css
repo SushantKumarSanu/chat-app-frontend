@@ -415,6 +415,7 @@ input, button, textarea, select {
     white-space: nowrap;
   }
     .tick       { font-size: 11px; color: rgba(255,255,255,0.28); }
+    .read{color: #22c55e;}
 
    .typing-bubble {
     align-self: flex-start;
