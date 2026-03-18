@@ -13,7 +13,7 @@ function ChatSidebar({chatlist,user,loading,onSelectChat,otherUserActivity,unrea
                 const otherusers = user?._id
                     ? elem.users.find(u => String(u._id) !== String(user._id))
                     :null;
-                const lastContent = elem.lastMessage?.messageId?.content|| elem.lastMessage?.content
+                const lastContent = elem.lastMessage?.content
             return <div key={elem._id} className="chat" onClick={()=>{
                 onSelectChat(elem);
             }}>

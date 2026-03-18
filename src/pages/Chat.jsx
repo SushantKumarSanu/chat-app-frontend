@@ -80,6 +80,16 @@ function Chat({user}){
     useEffect(()=>{
         const handleMessage = (NewMessage)=>{
             if(NewMessage.chat === activeChat?._id){
+                setActiveChat(prev=>
+                   ( {...prev,
+                    lastMessage:{
+                        ...prev.lastMessage,
+                        messageId:NewMessage._id,
+                        sender:NewMessage.sender._id,
+                        content:NewMessage.content,
+                        readBy:[],
+                    }
+            }));
                 setMessages(prev=>[...prev,NewMessage]);
                 String(NewMessage.sender._id) !== String(user._id) && socket.emit("message read",{message:NewMessage,user:user?._id});
             }
@@ -103,7 +113,10 @@ function Chat({user}){
                         ...chat,
                         lastMessage:{
                             ...chat.lastMessage,
-                            messageId:NewMessage
+                            messageId:NewMessage._id,
+                            sender:NewMessage.sender._id,
+                            content:NewMessage.content,
+                            readBy:[],
                         }
                     }
                     : chat
@@ -227,10 +240,12 @@ useEffect(()=>{
     },[]);
 
 
-    // useEffect(()=>{
-    //     console.log("messages:",messages)
-    // },[messages])
-
+    useEffect(()=>{
+        console.log("messages:",messages)
+    },[messages])
+useEffect(()=>{
+    console.log("activechat",activeChat)
+},[activeChat]);
 
     return <>
     {loading?(<div className="loading">Loading...</div>):
