@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import api from '../../services/api.js';
 import { socket } from '../../services/socket.js';
+import { formatTime } from '../../utils/formatTime.js';
 
 function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity}){
     const [message,setMessage] = useState("");
@@ -67,7 +68,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
                         <div className={`bubble ${isMine?'sent':'received'}`}>
                         {msg.content}
                         <div className="bubble-footer">
-                            <span className="bubble-time">{new Date(msg.createdAt).toLocaleString()}</span>
+                            <span className="bubble-time">{formatTime(msg.createdAt)}</span>
                             {isMine && msg.deliveredTo.includes(otherusers?._id) && <span className={`tick ${lastMessageId===msg._id&&activeChat?.lastMessage?.readBy.includes(otherusers?._id)&&'read'} `} >✓✓</span>}
                         </div>
                         </div>
