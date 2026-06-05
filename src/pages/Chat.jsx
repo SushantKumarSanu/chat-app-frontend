@@ -11,7 +11,6 @@ function Chat({user}){
     const [activeChat,setActiveChat] = useState(null);
     const [chatlist,setChatlist] =useState([]);
     const [messages,setMessages] = useState([]);
-    const [unreadByChat,setUnreadByChat] = useState({});
     const [otherUserActivity,setotherUserActivity] = useState({});
 
 
@@ -24,8 +23,7 @@ function Chat({user}){
                 console.log(chatsRes.data)
 
                 chatsRes.data.forEach(chat => {
-
-                    const otherusers = chat.users.find(
+                const otherusers = chat.users.find(
                 u=> String(u._id) !==String(user?._id)
                 )||{};
                 if(otherusers?._id){
@@ -34,7 +32,6 @@ function Chat({user}){
                         typing:false
                     }
                 }
-
                 });
                 setotherUserActivity(usersInitalActvivties);
 
@@ -45,6 +42,8 @@ function Chat({user}){
             };
         })();
     },[]);
+
+
 
 
     useEffect(()=>{
@@ -80,48 +79,57 @@ function Chat({user}){
     useEffect(()=>{
         const handleMessage = (NewMessage)=>{
             if(NewMessage.chat === activeChat?._id){
-                setActiveChat(prev=>
-                   ( {...prev,
-                    lastMessage:{
-                        ...prev.lastMessage,
-                        messageId:NewMessage._id,
-                        sender:NewMessage.sender._id,
-                        content:NewMessage.content,
-                        readBy:[],
-                    }
-            }));
+                let copyActiveChat = {...activeChat};
+                let updatedLastRead = {...activeChat.lastRead};
+                let updatedLastMessage = 
+                {...activeChat.lastMessage,
+                    messageId:NewMessage._id,
+                    sender:NewMessage.sender._id,
+                    content:NewMessage.content,
+                    readBy:[],
+                };
+                if(String(NewMessage.sender._id)===String(user._id)){
+                    updatedLastRead[user._id] = NewMessage._id;
+                }else{
+                        updatedLastRead[user._id] = NewMessage._id;
+                        updatedLastRead[NewMessage.sender._id] = NewMessage._id;
+                }
+                copyActiveChat.lastRead = updatedLastRead;
+                copyActiveChat.lastMessage = updatedLastMessage;
+                setActiveChat(copyActiveChat);
                 setMessages(prev=>[...prev,NewMessage]);
                 String(NewMessage.sender._id) !== String(user._id) && socket.emit("message read",{message:NewMessage,user:user?._id});
-            }
-            else{
-                setUnreadByChat(prev=>({
-                    ...prev,
-                    [NewMessage.chat] : {
-                        count:(prev[NewMessage.chat]?.count|| 0 ) + 1,
-                        content : NewMessage.content
-                    }
-                }))
+                setChatlist(prev=>{
+                    return prev.map((chat)=>{
+                        if(chat._id===NewMessage.chat){
+                            return{...chat,...copyActiveChat};
+                        };
+                        return chat ;
+                    })
+                })
 
-          
-               
-
-            }
-              setChatlist(prev=>
-                prev.map(chat=>
-                    chat._id === NewMessage.chat
-                    ?{
-                        ...chat,
-                        lastMessage:{
+            }else{
+                console.log("desired code start running")
+                setChatlist(prev=>
+                    prev.map(chat=>
+                        chat._id === NewMessage.chat
+                        ?{
+                            ...chat,
+                            lastMessage:{
                             ...chat.lastMessage,
                             messageId:NewMessage._id,
                             sender:NewMessage.sender._id,
                             content:NewMessage.content,
                             readBy:[],
-                        }
+                        },
+                        unreadCount:chat.unreadCount+1
                     }
                     : chat
                 )
             );
+
+            }
+    
             
             if(String(NewMessage.sender._id) !== String(user._id)){
             socket.emit("message recieved",{message:NewMessage._id,user:user?._id})
@@ -155,9 +163,6 @@ function Chat({user}){
         socket.on("message read",handleReadReciept);
         return () => socket.off("message read",handleReadReciept);
     },[activeChat?._id])
-useEffect(()=>{
-    console.log("this is chatlist:",chatlist);
-},[chatlist])
 
 
     useEffect(()=>{
@@ -178,16 +183,6 @@ useEffect(()=>{
 
         return ()=> socket.off("message recieved",handleDelivery);
     },[]);
-
-    useEffect(()=>{
-        if(!activeChat?._id) return;
-        setUnreadByChat(prev=>{
-            if(!prev[activeChat?._id]) return prev;
-            const copy = {...prev};
-            delete copy[activeChat._id];
-            return copy;
-        });       
-    },[activeChat?._id]);
 
     useEffect(()=>{
         const handleOnline = ({user})=>{
@@ -241,11 +236,10 @@ useEffect(()=>{
 
 
     useEffect(()=>{
-        console.log("messages:",messages)
-    },[messages])
-useEffect(()=>{
-    console.log("activechat",activeChat)
-},[activeChat]);
+        console.log("active chat",chatlist)
+    },[chatlist]);
+
+ 
 
     return <>
     {loading?(<div className="loading">Loading...</div>):
@@ -258,7 +252,7 @@ useEffect(()=>{
 
     </div>
     <div className="chatpage-container">
-        <ChatSidebar chatlist={chatlist} otherUserActivity={otherUserActivity} unreadByChat={unreadByChat} user={user} loading={loading} onSelectChat={setActiveChat}/>        
+        <ChatSidebar chatlist={chatlist} otherUserActivity={otherUserActivity} setChatlist={setChatlist}  user={user} loading={loading} onSelectChat={setActiveChat}/>        
         <ChatWindow  messages={messages}otherUserActivity={otherUserActivity}  messageLoading={messageLoading} activeChat={activeChat} user={user}/>
         
     </div>
