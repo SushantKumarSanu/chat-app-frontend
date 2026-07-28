@@ -9,7 +9,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
     const [sending,setSending] = useState(false);
     const [isTyping,setIsTyping] = useState(false);
     const typingTimeoutRef = useRef(null);
-    const otherusers =  activeChat?.users?.find(
+    const otherusers =  activeChat?.users?.find( 
                 u=> String(u._id) !==String(user?._id)
             )||{};
     const messageEndRef = useRef(null);
@@ -24,8 +24,10 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
             if(typingTimeoutRef.current){
                 clearTimeout(typingTimeoutRef.current);
             }
+            socket.emit("stop typing",activeChat?._id);
         }
-    },[]);
+    },[activeChat?._id]);
+
 
 
     useEffect(()=>{
@@ -69,7 +71,7 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
                         {msg.content}
                         <div className="bubble-footer">
                             <span className="bubble-time">{formatTime(msg.createdAt)}</span>
-                            {isMine && msg.deliveredTo.includes(otherusers?._id) && <span className={`tick ${lastMessageId===msg._id&&activeChat?.lastMessage?.readBy.includes(otherusers?._id)&&'read'} `} >✓✓</span>}
+                            {isMine && msg.deliveredTo.includes(otherusers?._id) && <span className={`tick ${(lastMessageId===msg._id&&activeChat?.lastMessage?.readBy.includes(otherusers?._id))|| (String(activeChat?.lastRead?.[otherusers?._id]) === String(msg._id))?'read':''} `} >✓✓</span>}
                         </div>
                         </div>
                     </div>

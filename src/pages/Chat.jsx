@@ -77,34 +77,42 @@ function Chat({user}){
     },[chatlist]);
 
     useEffect(()=>{
-        const handleMessage = (NewMessage)=>{
-            if(NewMessage.chat === activeChat?._id){
-                let copyActiveChat = {...activeChat};
-                let updatedLastRead = {...activeChat.lastRead};
-                let updatedLastMessage = 
-                {...activeChat.lastMessage,
-                    messageId:NewMessage._id,
-                    sender:NewMessage.sender._id,
-                    content:NewMessage.content,
-                    readBy:[],
-                };
-                if(String(NewMessage.sender._id)===String(user._id)){
-                    updatedLastRead[user._id] = NewMessage._id;
-                }else{
-                        updatedLastRead[user._id] = NewMessage._id;
-                        updatedLastRead[NewMessage.sender._id] = NewMessage._id;
-                }
-                copyActiveChat.lastRead = updatedLastRead;
-                copyActiveChat.lastMessage = updatedLastMessage;
-                setActiveChat(copyActiveChat);
-                setMessages(prev=>[...prev,NewMessage]);
+        const handleMessage = ({message:NewMessage,chat:reqChat})=>{
+            if(String(reqChat?._id) === activeChat?._id){
+                setActiveChat((prev)=>{
+                    if(String(NewMessage?.sender?._id) === String(user._id)){
+                        return{
+                            ...prev,
+                            lastMessage:reqChat.lastMessage}
+                        }
+                        return{
+                            ...prev,
+                            lastMessage:{
+                            ...reqChat.lastMessage,
+                            readBy:[user._id],
+                            }
+                        }
+                })
+                setMessages(prev=>[...prev,NewMessage]);   
                 String(NewMessage.sender._id) !== String(user._id) && socket.emit("message read",{message:NewMessage,user:user?._id});
                 setChatlist(prev=>{
                     return prev.map((chat)=>{
-                        if(chat._id===NewMessage.chat){
-                            return{...chat,...copyActiveChat};
-                        };
-                        return chat ;
+                        if(String(chat._id)===String(NewMessage.chat) && String(NewMessage?.sender?._id) === String(user._id)){
+                            return{
+                                ...chat,
+                                lastMessage:reqChat.lastMessage
+                        }
+                        }else if(String(chat._id)===String(NewMessage.chat) && String(NewMessage?.sender?._id) !== String(user._id)){
+                            return{
+                            ...chat,
+                            lastMessage:{
+                            ...reqChat.lastMessage,
+                            readBy:[user._id],
+                            }
+                            }
+                        }else{
+                            return chat
+                        }
                     })
                 })
 
@@ -148,15 +156,21 @@ function Chat({user}){
         const handleReadReciept = ({updatedChat})=>{
             setChatlist(prev=>
                 prev.map(chat=>
-                    chat._id === updatedChat._id
-                    ?{...chat,lastMessage:updatedChat.lastMessage}
+                    chat?._id === updatedChat?._id
+                    ?{...chat,
+                     lastMessage:updatedChat.lastMessage,
+                     lastRead:updatedChat.lastRead
+                    }
                     :chat
                 )
             );
             console.log("running")
             setActiveChat(prev=>
-                prev._id === updatedChat._id
-                ? {...prev,lastMessage:updatedChat.lastMessage}
+                prev?._id === updatedChat?._id
+                ? {...prev,
+                   lastMessage:updatedChat.lastMessage,
+                   lastRead:updatedChat.lastRead
+                }
                 : prev
             );
         };
@@ -236,8 +250,8 @@ function Chat({user}){
 
 
     useEffect(()=>{
-        console.log("active chat",chatlist)
-    },[chatlist]);
+        console.log("active chat",activeChat)
+    },[activeChat]);
 
  
 
