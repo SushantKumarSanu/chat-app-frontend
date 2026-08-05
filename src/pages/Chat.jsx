@@ -3,257 +3,127 @@ import api from "../services/api.js";
 import ChatSidebar from "../components/organisms/ChatSidebar.jsx";
 import ChatWindow from "../components/organisms/ChatWindow.jsx";
 import { socket } from "../services/socket.js";
+import useDeliverySync from "../hooks/useDeliverySync.js";
+import useReadSync from "../hooks/useReadSync.js";
+import useUserActivitySync from "../hooks/useUserActivitySync.js";
+import useChatRoomSync from "../hooks/useChatRoomSync.js";
+import useChatInitialization from "../hooks/useChatInitialization.js";
+import useMessageInitialization from "../hooks/useMessageInitialization.js";
+import { updateChatOnNewMessage } from "../utils/chatHelpers.js";
+import useIncomingMessageSync from "../hooks/useIncomingMessageSync.js";
 
 function Chat({user}){
-    const [loading,setloading] = useState(true);
-    const joinedChat = useRef(new Set());
-    const [messageLoading,setmessageLoading] = useState(false); 
+    
     const [activeChat,setActiveChat] = useState(null);
     const [chatlist,setChatlist] =useState([]);
     const [messages,setMessages] = useState([]);
     const [otherUserActivity,setotherUserActivity] = useState({});
 
 
-    useEffect(() => { 
-        (async()=>{
-            try{
-                const usersInitalActvivties = {}
-                const chatsRes = await api.get("/api/chat/chats")
-                setChatlist(chatsRes.data);
-                console.log(chatsRes.data)
-
-                chatsRes.data.forEach(chat => {
-                const otherusers = chat.users.find(
-                u=> String(u._id) !==String(user?._id)
-                )||{};
-                if(otherusers?._id){
-                    usersInitalActvivties[otherusers._id] = {
-                        isOnline:otherusers.isOnline,
-                        typing:false
-                    }
-                }
-                });
-                setotherUserActivity(usersInitalActvivties);
-
-            }catch(error){
-                console.error(error.message);
-            }finally{
-                setloading(false);
-            };
-        })();
-    },[]);
+    
+    const {loading} = useChatInitialization({setChatlist , setotherUserActivity , user });
+    useChatRoomSync({chatlist});
+    const {messageLoading} = useMessageInitialization({ activeChat , setMessages });
+    useUserActivitySync({setotherUserActivity});
+    useDeliverySync({ setMessages });
+    useReadSync({ setChatlist , setActiveChat });
+    useIncomingMessageSync({ user ,  activeChat , setActiveChat , setMessages , setChatlist });
 
 
+    // useEffect(()=>{
+    //     const handleMessage = ({message:NewMessage,chat:reqChat})=>{
+            
+    //         const userId = String(user._id);
+    //         const newMessageSender = String(NewMessage?.sender?._id);
+    //         const newMessageChat = String(NewMessage.chat);
+    //         const isSender = newMessageSender === userId;
+
+    //         if(!isSender){
+    //             socket.emit("message recieved",{message:NewMessage._id,user:user?._id});
+    //         }
 
 
-    useEffect(()=>{
-        if(!activeChat?._id) return;
-        setmessageLoading(true);          
-        (async()=>{
-            try{
-                const messages = await api.get(`/api/messages/messages/${activeChat?._id}`);
-                setMessages([...messages.data].reverse());
-            }catch(error){
-                console.error(error.message);
-                console.error(error.stack);
-            }finally{
-             
-            setmessageLoading(false);
+    //         if(String(reqChat?._id) === activeChat?._id){
+
+    //             setActiveChat(prev=>
+
+    //                 updateChatOnNewMessage({
+    //                     chat : prev ,
+    //                     isSender : isSender ,
+    //                     messageId : NewMessage._id ,
+    //                     userId : user._id ,
+    //                     lastMessage : reqChat.lastMessage
+    //                 })
+
+    //             );
+
+    //             setMessages(prev=>[...prev,NewMessage]);   
+                
+    //             setChatlist(prev=>{
+    //                 return prev.map((chat)=>{
+
+    //                     if( String(chat._id)===newMessageChat ){
+                            
+    //                         return  updateChatOnNewMessage({
+    //                                     chat:chat ,
+    //                                     isSender:isSender ,
+    //                                     messageId:NewMessage._id ,
+    //                                     userId: userId ,
+    //                                     lastMessage : reqChat.lastMessage
+    //                             });
+
+    //                     }else{
+
+    //                         return chat ;
+
+    //                     }
+    //                 })
+    //             });
 
 
-            };
-        })();
-    },[activeChat?._id]);
+    //             newMessageSender !== userId && socket.emit("message read",{message:NewMessage,user:user?._id});
 
-    useEffect(()=>{
-        if(chatlist.length===0) return;
+    //         }else{
 
-        chatlist.forEach((chat)=>{
-            if(!joinedChat.current.has(chat._id)){
-            socket.emit("join chat",chat._id);
-            joinedChat.current.add(chat._id);
-            };
-        });     
-    },[chatlist]);
+    //             setChatlist(prev=>
 
-    useEffect(()=>{
-        const handleMessage = ({message:NewMessage,chat:reqChat})=>{
-            if(String(reqChat?._id) === activeChat?._id){
-                setActiveChat((prev)=>{
-                    if(String(NewMessage?.sender?._id) === String(user._id)){
-                        return{
-                            ...prev,
-                            lastMessage:reqChat.lastMessage}
-                        }
-                        return{
-                            ...prev,
-                            lastMessage:{
-                            ...reqChat.lastMessage,
-                            readBy:[user._id],
-                            }
-                        }
-                })
-                setMessages(prev=>[...prev,NewMessage]);   
-                String(NewMessage.sender._id) !== String(user._id) && socket.emit("message read",{message:NewMessage,user:user?._id});
-                setChatlist(prev=>{
-                    return prev.map((chat)=>{
-                        if(String(chat._id)===String(NewMessage.chat) && String(NewMessage?.sender?._id) === String(user._id)){
-                            return{
-                                ...chat,
-                                lastMessage:reqChat.lastMessage
-                        }
-                        }else if(String(chat._id)===String(NewMessage.chat) && String(NewMessage?.sender?._id) !== String(user._id)){
-                            return{
-                            ...chat,
-                            lastMessage:{
-                            ...reqChat.lastMessage,
-                            readBy:[user._id],
-                            }
-                            }
-                        }else{
-                            return chat
-                        }
-                    })
-                })
+    //                 prev.map(chat=>
 
-            }else{
-                console.log("desired code start running")
-                setChatlist(prev=>
-                    prev.map(chat=>
-                        chat._id === NewMessage.chat
-                        ?{
-                            ...chat,
-                            lastMessage:{
-                            ...chat.lastMessage,
-                            messageId:NewMessage._id,
-                            sender:NewMessage.sender._id,
-                            content:NewMessage.content,
-                            readBy:[],
-                        },
-                        unreadCount:chat.unreadCount+1
-                    }
-                    : chat
-                )
-            );
+    //                     String(chat._id) === newMessageChat
+    //                     ?{
+    //                         ...chat,
+    //                         lastMessage:{
+    //                         ...chat.lastMessage,
+    //                         messageId:NewMessage._id,
+    //                         sender:NewMessage.sender._id,
+    //                         content:NewMessage.content,
+    //                     },
+    //                     unreadCount:chat.unreadCount+1
+    //                 }
 
-            }
+    //                 : chat
+
+    //             )
+
+    //         );
+
+    //         }
     
             
-            if(String(NewMessage.sender._id) !== String(user._id)){
-            socket.emit("message recieved",{message:NewMessage._id,user:user?._id})
-            }
-        }
-        socket.on("new message",handleMessage);
+    
+    //     }
+
+    //     socket.on("new message",handleMessage);
+
+    //     return () => {
+
+    //         socket.off("new message",handleMessage)
+
+    //     };
+
+    // },[activeChat?._id]);
 
 
-        return () => {
-            socket.off("new message",handleMessage)
-
-        };
-    },[activeChat?._id]);
-
-    useEffect(()=>{
-        const handleReadReciept = ({updatedChat})=>{
-            setChatlist(prev=>
-                prev.map(chat=>
-                    chat?._id === updatedChat?._id
-                    ?{...chat,
-                     lastMessage:updatedChat.lastMessage,
-                     lastRead:updatedChat.lastRead
-                    }
-                    :chat
-                )
-            );
-            console.log("running")
-            setActiveChat(prev=>
-                prev?._id === updatedChat?._id
-                ? {...prev,
-                   lastMessage:updatedChat.lastMessage,
-                   lastRead:updatedChat.lastRead
-                }
-                : prev
-            );
-        };
-        socket.on("message read",handleReadReciept);
-        return () => socket.off("message read",handleReadReciept);
-    },[activeChat?._id])
-
-
-    useEffect(()=>{
-        const handleDelivery = ({message,user})=>{
-            return setMessages(prev=>
-            prev.map(msg=>{
-                if(String(msg._id)===String(message)){
-                    return {...msg,
-                        deliveredTo:[...msg.deliveredTo,user]
-                    };    
-                }
-                return msg;
-            })
-           );
-        };
-        socket.on("message recieved",handleDelivery)
-
-
-        return ()=> socket.off("message recieved",handleDelivery);
-    },[]);
-
-    useEffect(()=>{
-        const handleOnline = ({user})=>{
-             setotherUserActivity(prev=>({
-                ...prev,
-                [String(user)]:{
-                    ...prev[user],
-                    isOnline:true
-                }
-            }));
-        };
-
-        const handleOffline = ({user})=>{
-            setotherUserActivity(prev=>({
-                ...prev,
-                [String(user)]:{
-                    ...prev[user],
-                    isOnline:false
-                }
-            }));
-        }
-        const handleTyping = ({chatId,user})=>{
-            setotherUserActivity(prev=>({
-                ...prev,
-                [user]:{
-                 ...prev[user],
-                  typing:chatId
-                }
-            }));
-        };
-        const handleStopTyping = ({user})=>{
-             setotherUserActivity(prev=>({
-                ...prev,
-                [user]:{
-                    ...prev[user],
-                    typing:undefined
-                }
-            }));
-        };
-        socket.on("user online",handleOnline);
-        socket.on("user offline",handleOffline);
-        socket.on("typing",handleTyping);
-        socket.on("stop typing",handleStopTyping);
-        return ()=> {
-            socket.off("user online",handleOnline);
-            socket.off("user offline",handleOffline);
-            socket.off("typing",handleTyping);
-            socket.off("stop typing",handleStopTyping);
-        }
-    },[]);
-
-
-    useEffect(()=>{
-        console.log("active chat",activeChat)
-    },[activeChat]);
-
- 
 
     return <>
     {loading?(<div className="loading">Loading...</div>):

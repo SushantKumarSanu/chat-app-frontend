@@ -72,6 +72,7 @@ function MessageInput({activeChat}){
 
     useEffect(()=>{
         return ()=>{
+            setIsTyping(false)
             if(typingTimeoutRef.current){
                 clearTimeout(typingTimeoutRef.current);
             }

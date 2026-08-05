@@ -18,7 +18,7 @@ function MessageList({activeChat , messages , otherUserActivity , messageEndRef 
                     const lastMessageId =activeChat?.lastMessage?.messageId;
                     
                     const deliveredTo = msg.deliveredTo.includes(otherUserId);
-                    const isRead = (lastMessageId===msg._id&& activeChat?.lastMessage?.readBy.includes(otherUserId)) || (String(activeChat?.lastRead?.[otherUserId]) === String(msg._id));
+                    const isRead = (String(activeChat?.lastRead?.[otherUserId]) === String(msg._id)) ;
 
 
                     return<>
