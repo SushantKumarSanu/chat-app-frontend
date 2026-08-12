@@ -57,7 +57,7 @@ function ChatList({ chatlist , user , onSelectChat , otherUserActivity , setChat
 
                 {isActive && (<div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 bg-primary rounded-r-full shadow-[0_0_8px_rgba(189,194,255,0.6)]" />)}
 
-                {othersAvatar?<img src={othersAvatar} alt="" className="w-10 h-10 rounded-full object-cover shrink-0 shadow-sm" />:<div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary-container to-surface-variant text-on-secondary-container flex items-center justify-center shrink-0 font-headline-md font-bold shadow-sm">{othersprefix}</div>}
+                {othersAvatar?<img src={othersAvatar} alt="" className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover shrink-0 shadow-sm" />:<div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary-container to-surface-variant text-on-secondary-container flex items-center justify-center shrink-0 font-headline-md font-bold shadow-sm">{othersprefix}</div>}
                 
 
 

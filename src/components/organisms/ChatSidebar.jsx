@@ -8,8 +8,7 @@ function ChatSidebar({chatlist,user,loading,onSelectChat,activeChat,otherUserAct
 
     return<>
 
-    <div className="ml-20 w-sidebar-width h-full bg-surface-container-low/80 backdrop-blur-xl border-r border-outline-variant/30 flex flex-col hidden md:flex shrink-0 relative z-40">
-
+<div className="w-full md:w-sidebar-width h-full bg-surface-container-low/80 backdrop-blur-xl border-r border-outline-variant/30 hidden md:flex flex-col shrink-0 relative z-40">
    
         <SidebarHeader user={user}/>
         <SearchBox/>

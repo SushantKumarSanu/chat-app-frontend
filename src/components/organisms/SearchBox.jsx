@@ -72,7 +72,7 @@ function SearchBox(){
 
 
     return  <div className="search-box">
-                <div className='p-4 shrink-0'>
+                <div className="p-3 md:p-4 shrink-0">
                     <div className="relative group">
                         {/* <img src= {searchIcon} alt="" />  */}
                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm group-focus-within:text-primary transition-colors duration-300">search</span>

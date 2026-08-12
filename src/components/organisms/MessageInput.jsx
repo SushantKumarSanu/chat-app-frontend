@@ -82,10 +82,10 @@ function MessageInput({activeChat}){
 
 
     return (
-  <div className="shrink-0 w-full px-4 pb-0 pt-1 mb-1">
+  <div className="shrink-0 w-full px-2 md:px-4 pb-0 pt-1 mb-1">
     <form
       onSubmit={handleMessageSubmission}
-    className="flex items-center gap-1 bg-surface-container-low/30 backdrop-blur-xl border border-outline-variant/20 rounded-2xl px-2 py-1 focus-within:bg-surface-container-low/40 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 transition-all duration-300 shadow-xl"
+    className="flex items-center gap-1 md:gap-2 bg-surface-container-low/30 backdrop-blur-xl border border-outline-variant/20 rounded-2xl md:rounded-3xl px-2 py-1 focus-within:bg-surface-container-low/40 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 transition-all duration-300 shadow-xl"
 >
       <button
         type="button"
