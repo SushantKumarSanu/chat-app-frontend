@@ -72,11 +72,11 @@ function SearchBox(){
 
 
     return  <div className="search-box">
-                <div className='search-section'>
-                    <div className="search-icon">
-                        <img src= {searchIcon} alt="" /> 
-                    </div>
-                    <div className="search-value"><input type="text" value={query} onChange={handleSearchChange}placeholder='Search'/>
+                <div className='p-4 shrink-0'>
+                    <div className="relative group">
+                        {/* <img src= {searchIcon} alt="" />  */}
+                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm group-focus-within:text-primary transition-colors duration-300">search</span>
+                        <input className="w-full bg-surface-container-highest/50 border border-outline-variant/30 rounded-full py-2.5 pl-10 pr-4 text-on-surface font-body-md focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-300 placeholder:text-on-surface-variant/50 shadow-inner" type="text" value={query} onChange={handleSearchChange}placeholder='Search'/>
                     </div>
                 </div>
                 <div className="search-result">

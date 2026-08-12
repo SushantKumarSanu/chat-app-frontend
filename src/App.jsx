@@ -4,6 +4,7 @@ import api from "./services/api.js";
 import { socket } from "./services/socket.js";
 import Login from "./pages/Login.jsx";
 import Chat from "./pages/chat.jsx";
+import Profile from "./pages/Profile.jsx";
 import AuthGuard from "./components/AuthGuard.jsx";
 import GuestGuard from "./components/GuestGuard.jsx";
 
@@ -49,6 +50,7 @@ function App() {
     <Routes>
         <Route path="/" element={<GuestGuard user={user}><Login setUser={setUser}/></GuestGuard>}/>
       <Route path="/chat" element={<AuthGuard user={user}><Chat user={user} setUser={setUser}/></AuthGuard>}/>
+      <Route path="/profile" element={<AuthGuard><Profile user={user}/></AuthGuard>} />
     </Routes>
   )
 }

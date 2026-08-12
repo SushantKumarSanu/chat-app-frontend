@@ -28,7 +28,13 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
         )
     }
 
-    return(<div className="chat-window">
+    return(<div className="flex-1 flex flex-col min-w-0 bg-[#0C0C0C] relative" style={{
+            backgroundImage: `url("/chatwindowBackground.png")`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundBlendMode: "luminosity",
+            backgroundAttachment: "fixed",
+        }} data-stitch-orig-opacity="0.85">
 
             <ChatHeader activeChat={activeChat} user={user} otherUserActivity={otherUserActivity}/>
             
