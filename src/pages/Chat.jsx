@@ -3,6 +3,7 @@ import api from "../services/api.js";
 import ChatSidebar from "../components/organisms/ChatSidebar.jsx";
 import AppSidebar from "../components/organisms/AppSideBar.jsx";
 import ChatWindow from "../components/organisms/ChatWindow.jsx";
+import ProfilePanel from "../components/organisms/ProfilePanel.jsx";
 import { socket } from "../services/socket.js";
 import useDeliverySync from "../hooks/useDeliverySync.js";
 import useReadSync from "../hooks/useReadSync.js";
@@ -19,6 +20,7 @@ function Chat({user}){
     const [chatlist,setChatlist] =useState([]);
     const [messages,setMessages] = useState([]);
     const [otherUserActivity,setotherUserActivity] = useState({});
+    const [activeView,setActiveView] = useState("chats");
 
 
     
@@ -30,7 +32,11 @@ function Chat({user}){
     useReadSync({ setChatlist , setActiveChat });
     useIncomingMessageSync({ user ,  activeChat , setActiveChat , setMessages , setChatlist });
 
-
+    
+    const viewMap = {
+        "chats":()=> <ChatSidebar chatlist={chatlist} otherUserActivity={otherUserActivity} setChatlist={setChatlist} activeChat={activeChat} user={user} loading={loading} onSelectChat={setActiveChat}/>,
+        "profile":()=><ProfilePanel user={user}/>
+    }
 
     return <>
     {loading?(<div className="loading">Loading...</div>):
@@ -38,9 +44,10 @@ function Chat({user}){
     <>
    
     <div className="bg-background text-on-background font-body-md h-screen flex overflow-hidden pb-16 md:pb-0 md:pl-20">
-        <AppSidebar/>
-        <ChatSidebar chatlist={chatlist} otherUserActivity={otherUserActivity} setChatlist={setChatlist} activeChat={activeChat} user={user} loading={loading} onSelectChat={setActiveChat}/>        
-        <ChatWindow  messages={messages}otherUserActivity={otherUserActivity}  messageLoading={messageLoading} activeChat={activeChat} user={user}/>
+        <AppSidebar user={user} selectView={setActiveView}/>
+        {viewMap[activeView]?.()};
+        <ChatWindow  messages={messages}otherUserActivity={otherUserActivity}  messageLoading={messageLoading} 
+        activeChat={activeChat} user={user}/>
         
     </div>
     </>)
