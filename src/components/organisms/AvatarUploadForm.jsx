@@ -59,7 +59,7 @@ onClick={()=>{fileInputRef.current?.click();}}>
 <p className="text-sm text-white">Click to upload another image</p>
 
 </>) }
-<input ref={fileInputRef}  className="hidden" id="file-input" type="file" 
+<input ref={fileInputRef}  className="hidden"   accept="image/*" id="file-input" type="file" 
 onChange={()=>{
     const file = fileInputRef.current?.files[0];
     if(!file) return ;

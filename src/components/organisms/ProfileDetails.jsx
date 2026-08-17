@@ -26,10 +26,6 @@ function ProfileDetails({ user , selectPorfileView }){
         </div>
       </div>
       <div className="w-full space-y-6">
-        <div>
-          <label className="block text-xs font-medium text-obsidian-muted uppercase tracking-wider mb-1">Name</label>
-          <p className="text-white font-medium">Karan</p>
-        </div>
         <div><label className="block text-xs font-medium text-obsidian-muted uppercase tracking-wider mb-1">Username</label>
           <p className="text-white font-medium">{userName}</p>
         </div>
