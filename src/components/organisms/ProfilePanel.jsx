@@ -4,7 +4,7 @@ import AvatarOptionsDialog from "./AvatarOptionsDialog.jsx";
 import AvatarUploadForm from "./AvatarUploadForm.jsx";
 import Avatar from "./Avatar.jsx";
 
-function ProfilePanel({user}){
+function ProfilePanel({ user , setUser }){
   const [profileView,setProfileView] = useState(null);
 
   const userAvatar = user?.avatar?.secure_url ;
@@ -18,15 +18,14 @@ function ProfilePanel({user}){
   
   
   const profileViewMap = {
-    "avatar" : () => <Avatar selectPorfileView={setProfileView} profileView={profileView} />,
+    "avatar" : () => <Avatar user={user} setUser={setUser} selectPorfileView={setProfileView} profileView={profileView} />,
 
   }
 
 
     return <>
     <ProfileDetails  user={user} selectPorfileView={setProfileView}/>
-    {/* <Avatar selectPorfileView={setProfileView} profileView={profileView} /> */}
-    {profileViewMap[profileView]?.()};
+    {profileViewMap[profileView]?.()}
     
     </>
 };

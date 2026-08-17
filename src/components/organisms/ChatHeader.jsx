@@ -21,7 +21,7 @@ function ChatHeader({ activeChat , user , otherUserActivity }){
 <div className="absolute top-0 w-full z-10 flex items-center justify-between px-4 md:px-6 h-16 bg-surface/70 backdrop-blur-xl border-b border-outline-variant/30 shrink-0">       
  <div className="flex items-center gap-3 md:gap-4">
             <div className='relative'>
-                {othersAvatar?<img className="w-9 h-9 rounded-full object-cover shadow-sm" src={othersAvatar} alt="" />:<div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary-container to-surface-variant text-on-secondary-container flex items-center justify-center shrink-0 font-headline-md font-bold shadow-sm">{othersprefix}</div>}
+                {othersAvatar?<img className="w-9 h-9 rounded-[9999px] object-cover shadow-sm" src={othersAvatar} alt="" />:<div className="w-10 h-10 rounded-[9999px] bg-gradient-to-br from-secondary-container to-surface-variant text-on-secondary-container flex items-center justify-center shrink-0 font-headline-md font-bold shadow-sm">{othersprefix}</div>}
                 {activity?.isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] z-20 border-2 border-surface/70 animate-pulse"></div>}
             </div>
             {activity?.isOnline && (<span className="status-dot online"></span>)}

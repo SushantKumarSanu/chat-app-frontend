@@ -14,16 +14,15 @@ import useMessageInitialization from "../hooks/useMessageInitialization.js";
 import { updateChatOnNewMessage } from "../utils/chatHelpers.js";
 import useIncomingMessageSync from "../hooks/useIncomingMessageSync.js";
 
-function Chat({user}){
+function Chat({user,setUser}){
     
     const [activeChat,setActiveChat] = useState(null);
     const [chatlist,setChatlist] =useState([]);
     const [messages,setMessages] = useState([]);
     const [otherUserActivity,setotherUserActivity] = useState({});
     const [activeView,setActiveView] = useState("chats");
-
-
     
+
     const {loading} = useChatInitialization({setChatlist , setotherUserActivity , user });
     useChatRoomSync({chatlist});
     const {messageLoading} = useMessageInitialization({ activeChat , setMessages });
@@ -35,7 +34,7 @@ function Chat({user}){
     
     const viewMap = {
         "chats":()=> <ChatSidebar chatlist={chatlist} otherUserActivity={otherUserActivity} setChatlist={setChatlist} activeChat={activeChat} user={user} loading={loading} onSelectChat={setActiveChat}/>,
-        "profile":()=><ProfilePanel user={user}/>
+        "profile":()=><ProfilePanel setUser={setUser} user={user}/>
     }
 
     return <>
@@ -45,7 +44,7 @@ function Chat({user}){
    
     <div className="bg-background text-on-background font-body-md h-screen flex overflow-hidden pb-16 md:pb-0 md:pl-20">
         <AppSidebar user={user} selectView={setActiveView}/>
-        {viewMap[activeView]?.()};
+        {viewMap[activeView]?.()}
         <ChatWindow  messages={messages}otherUserActivity={otherUserActivity}  messageLoading={messageLoading} 
         activeChat={activeChat} user={user}/>
         
