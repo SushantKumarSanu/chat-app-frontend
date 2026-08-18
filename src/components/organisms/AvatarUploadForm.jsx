@@ -19,7 +19,7 @@ function AvatarUploadForm({ selectAvatarView , selectPorfileView , profileView ,
         let res;
 
         try {
-            res = await api.patch("/api/protected/avatar",formData);
+            res = await api.patch("/api/protected/profile/avatar",formData);
             const avatar_url = res.data.user?.avatar?.secure_url;
 
             setUser(prev=>{

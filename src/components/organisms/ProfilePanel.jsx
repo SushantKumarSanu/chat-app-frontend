@@ -24,7 +24,7 @@ function ProfilePanel({ user , setUser }){
 
 
     return <>
-    <ProfileDetails  user={user} selectPorfileView={setProfileView}/>
+    <ProfileDetails  user={user} setUser={setUser} selectPorfileView={setProfileView}/>
     {profileViewMap[profileView]?.()}
     
     </>

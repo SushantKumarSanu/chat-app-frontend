@@ -14,7 +14,7 @@ function App() {
   useEffect(()=>{
     (async () => {
       try{
-        const userRes = await api.get("/api/protected/profile");
+        const userRes = await api.get("/api/protected/profile/userdetails");
         setUser(userRes.data.user);
       }catch(err){
         setUser(null);
