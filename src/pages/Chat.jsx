@@ -31,24 +31,13 @@ function Chat({user,setUser}){
     useReadSync({ setChatlist , setActiveChat });
     useIncomingMessageSync({ user ,  activeChat , setActiveChat , setMessages , setChatlist });
 
-    
-    const viewMap = {
-        "chats":()=> <ChatSidebar chatlist={chatlist} otherUserActivity={otherUserActivity} setChatlist={setChatlist} activeChat={activeChat} user={user} loading={loading} onSelectChat={setActiveChat}/>,
-        "profile":()=><ProfilePanel setUser={setUser} user={user}/>
-    }
-
     return <>
     {loading?(<div className="loading">Loading...</div>):
     (
-    <>
-   
-    <div className="bg-background text-on-background font-body-md h-screen flex overflow-hidden pb-16 md:pb-0 md:pl-20">
-        <AppSidebar user={user} selectView={setActiveView}/>
-        {viewMap[activeView]?.()}
+    <>  <ChatSidebar chatlist={chatlist} otherUserActivity={otherUserActivity} setChatlist={setChatlist} 
+        activeChat={activeChat} user={user} loading={loading} onSelectChat={setActiveChat}/>
         <ChatWindow  messages={messages}otherUserActivity={otherUserActivity}  messageLoading={messageLoading} 
         activeChat={activeChat} user={user}/>
-        
-    </div>
     </>)
 }
 

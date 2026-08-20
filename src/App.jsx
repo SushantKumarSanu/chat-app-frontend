@@ -6,6 +6,7 @@ import Login from "./pages/Login.jsx";
 import Chat from "./pages/chat.jsx";
 import AuthGuard from "./components/AuthGuard.jsx";
 import GuestGuard from "./components/GuestGuard.jsx";
+import MainLayer from "./pages/MainLayer.jsx";
 
 function App() {
   const [user,setUser] = useState(null);
@@ -47,8 +48,10 @@ function App() {
   
   return (
     <Routes>
-        <Route path="/" element={<GuestGuard user={user}><Login setUser={setUser}/></GuestGuard>}/>
-      <Route path="/chat" element={<AuthGuard user={user}><Chat user={user} setUser={setUser}/></AuthGuard>}/>
+      <Route path="/" element={<GuestGuard user={user}><Login setUser={setUser}/></GuestGuard>}/>
+      <Route path="/chat" element={<AuthGuard user={user}><MainLayer user={user} setUser={setUser}/></AuthGuard>}/>
+
+      {/* <Route path="/chat" element={<AuthGuard user={user}><Chat user={user} setUser={setUser}/></AuthGuard>}/> */}
     </Routes>
   )
 }
