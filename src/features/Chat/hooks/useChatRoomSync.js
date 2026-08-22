@@ -1,4 +1,4 @@
-import { socket } from "../services/socket";
+import { socket } from "../../../services/socket";
 import { useEffect, useRef } from "react";
 
 function useChatRoomSync({chatlist}){

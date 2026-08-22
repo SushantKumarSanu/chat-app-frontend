@@ -6,7 +6,6 @@ function Avatar({ selectPorfileView ,profileView ,setUser }){
 
     const[avatarView,setAvatarView]=useState("avatarDialog");
 
-    useEffect(()=>{console.log(avatarView,"this is avatar view")},[avatarView]);
     const avatarViewMap ={
         "avatarDialog" : ()=><AvatarOptionsDialog selectAvatarView={setAvatarView}  selectPorfileView={selectPorfileView}/>,
         "avatarUploadForm" : () => <AvatarUploadForm setUser={setUser} 

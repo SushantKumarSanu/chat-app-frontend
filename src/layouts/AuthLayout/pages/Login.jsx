@@ -1,4 +1,5 @@
-import LoginForm from "../components/organisms/LoginForm.jsx"
+// import LoginForm from "../components/login/LoginForm.jsx"
+import LoginForm from "../components/login/LoginForm"
 
 
 function Login({setUser}){

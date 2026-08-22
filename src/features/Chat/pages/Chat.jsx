@@ -1,26 +1,20 @@
-import { useEffect, useRef, useState } from "react";
-import api from "../services/api.js";
-import ChatSidebar from "../components/organisms/ChatSidebar.jsx";
-import AppSidebar from "../components/organisms/AppSideBar.jsx";
-import ChatWindow from "../components/organisms/ChatWindow.jsx";
-import ProfilePanel from "../components/organisms/ProfilePanel.jsx";
-import { socket } from "../services/socket.js";
+import { useState } from "react";
+import ChatSidebar from "../components/ChatSidebar/ChatSidebar.jsx";
+import ChatWindow from "../components/ChatWindow/ChatWindow.jsx";
 import useDeliverySync from "../hooks/useDeliverySync.js";
 import useReadSync from "../hooks/useReadSync.js";
 import useUserActivitySync from "../hooks/useUserActivitySync.js";
 import useChatRoomSync from "../hooks/useChatRoomSync.js";
-import useChatInitialization from "../hooks/useChatInitialization.js";
+import useChatInitialization from "../hooks/useChatInitialization.js"
 import useMessageInitialization from "../hooks/useMessageInitialization.js";
-import { updateChatOnNewMessage } from "../utils/chatHelpers.js";
 import useIncomingMessageSync from "../hooks/useIncomingMessageSync.js";
 
-function Chat({user,setUser}){
+function Chat({user}){
     
     const [activeChat,setActiveChat] = useState(null);
     const [chatlist,setChatlist] =useState([]);
     const [messages,setMessages] = useState([]);
     const [otherUserActivity,setotherUserActivity] = useState({});
-    const [activeView,setActiveView] = useState("chats");
     
 
     const {loading} = useChatInitialization({setChatlist , setotherUserActivity , user });

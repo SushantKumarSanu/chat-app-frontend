@@ -1,8 +1,8 @@
 import  {useEffect, useState}  from "react";
-import ProfileDetails from "./ProfileDetails.jsx";
-import AvatarOptionsDialog from "./AvatarOptionsDialog.jsx";
-import AvatarUploadForm from "./AvatarUploadForm.jsx";
-import Avatar from "./Avatar.jsx";
+import ProfileDetails from "../components/profileDetails/ProfileDetails.jsx";
+import AvatarOptionsDialog from "../components/Avatar/AvatarOptionsDialog.jsx";
+import AvatarUploadForm from "../components/Avatar/AvatarUploadForm.jsx";
+import Avatar from "../components/Avatar/Avatar.jsx";
 
 function ProfilePanel({ user , setUser }){
   const [profileView,setProfileView] = useState(null);

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import api from "../../services/api";
-import { socket } from '../../services/socket.js';
+import api from "../../../../services/api.js";
+import { socket } from '../../../../services/socket.js';
 
 function MessageInput({activeChat}){
 

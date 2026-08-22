@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
-import searchIcon from '../../assets/images/search-line.svg'
-import api from '../../services/api';
+// import searchIcon from '../../assets/images/search-line.svg'
+import searchIcon from "../../../../assets/images/search-line.svg"
+import api from '../../../../services/api';
 
 
 

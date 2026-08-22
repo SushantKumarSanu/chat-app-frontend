@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { socket } from "../services/socket";
+import { socket } from "../../../services/socket";
 import { updateChatOnNewMessage } from "../utils/chatHelpers";
 
 function useIncomingMessageSync({ user ,  activeChat , setActiveChat , setMessages , setChatlist }){
