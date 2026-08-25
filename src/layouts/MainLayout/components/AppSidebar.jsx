@@ -67,7 +67,7 @@ function AppSidebar({ user , selectView }) {
         {/* Settings */}
         <button type="button" aria-label="Settings" className="settings-icon-hover flex h-full items-center justify-center
         gap-1 px-4 text-on-surface-variant transition-all duration-300 ease-out 
-        active:scale-90 md:h-auto md:aspect-square md:w-full md:px-0 md:flex-col">
+        active:scale-90 md:h-auto md:aspect-square md:w-full md:px-0 md:flex-col" onClick={()=>{selectView("setting")}}>
             <span className="material-symbols-outlined text-2xl  p-2 rounded-xl  transition-transform
             duration-300 hover:bg-primary-container/20 hover:text-white transition-colors group">
                 settings
