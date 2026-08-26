@@ -1,4 +1,4 @@
-function AccountDetails({ user, setSettingView }) {
+function AccountDetails({ user , setSettingView , setAccountView}) {
   const userEmail = user?.email;
   return (
     <div className="p-6">
@@ -44,7 +44,7 @@ function AccountDetails({ user, setSettingView }) {
         <label className="block text-sm font-medium text-obsidian-muted">Password</label>
         <div className="flex items-center gap-2">
             <p className="w-full text-sm  text-white">••••••••••••••</p>
-            <button type="button" onClick={() => setSettingView("updatePassword")} className="flex h-7 w-7 
+            <button type="button" onClick={() => setAccountView("updatePassword")} className="flex h-7 w-7 
             items-center justify-center rounded-full text-obsidian-muted hover:bg-primary-container/15 hover:text-on-surface transition-colors" >
             <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>edit</span></button>
         </div>
