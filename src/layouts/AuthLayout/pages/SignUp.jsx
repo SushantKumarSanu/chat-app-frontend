@@ -1,5 +1,6 @@
-import IntroAnimation from "../components/SignUp/IntroAnimation.jsx";
-import "../components/SignUp/signUp.css"
+import IntroAnimation from "../components/IntroAnimation.jsx";
+// import "../components/SignUp/signUp.css"
+import "../components/auth.css"
 import SignUpForm from "../components/SignUp/SignUpForm.jsx";
 import SocialLogin from "../components/SignUp/SocialLogin.jsx";
 import SignUpFooter from "../components/SignUp/SighUpFooter.jsx";

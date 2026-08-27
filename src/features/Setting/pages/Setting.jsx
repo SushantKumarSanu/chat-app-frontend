@@ -12,8 +12,7 @@ function Setting({ setUser, user}){
     const viewMap = {
         nav:()=><SettingNav setSettingView={setSettingView}/>,
         account:()=><Account user={user} setSettingView={setSettingView}/>,
-        // account:()=><AccountDetails user={user} setSettingView={setSettingView}/>,
-        updatePassword:()=><UpdatePassword setSettingView={setSettingView}/>,
+
     } 
 
 
