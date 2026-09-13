@@ -5,16 +5,24 @@ import SettingHeader from "../components/SettingHeader.jsx";
 import AccountDetails from "../components/Account/AccountDetails/AccountDetails.jsx"
 import UpdatePassword from "../components/Account/UpdatePassword/UpdatePassword.jsx";
 import SettingFooter from "../components/SettingFooter.jsx";
-function Setting({ setUser, user}){
-    const[settingView,setSettingView]= useState("nav");
+import type { JSX } from "react";
 
 
-    const viewMap = {
+
+type SettingView = "nav"|"account"; 
+
+
+function Setting(){
+
+
+    const[settingView,setSettingView]= useState<SettingView>("nav");
+
+
+    const viewMap:Record<SettingView,()=>JSX.Element> = {
         nav:()=><SettingNav setSettingView={setSettingView}/>,
-        account:()=><Account user={user} setSettingView={setSettingView}/>,
+        account:()=><Account setSettingView={setSettingView}/>,
 
-    } 
-
+    };
 
 
     return<><div className="w-full md:w-sidebar-width h-full bg-surface-container-low/80
@@ -23,7 +31,7 @@ function Setting({ setUser, user}){
                 {/* Header */}
                 <SettingHeader settingView={settingView}/>
                  <div className="flex-1 min-h-0 overflow-y-auto">
-                {viewMap[settingView]?.()}
+                {viewMap[settingView]()}
                 </div>
 
                 
@@ -32,7 +40,7 @@ function Setting({ setUser, user}){
     </>
 };
 
-
+export type {SettingView}
 export default Setting;
 
 
