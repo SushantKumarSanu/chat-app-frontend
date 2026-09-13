@@ -1,12 +1,15 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import api from "../../../../services/api";
+import useUserStore from "../../../../app/store/userStore";
+import axios from "axios";
 
-function SignUpForm({setUser}){
+function SignUpForm(){
+    type passwordView = null|"password"|"confirmPassword";
+    const[visiblePassword,setVisiblePassword] = useState<passwordView>(null);
+    const setUser = useUserStore((state)=>state.setUser)
 
-    const[visiblePassword,setVisiblePassword] = useState(null);
-
-
-    const handleSubmit = async(e)=>{
+    const handleSubmit = async(e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         let res;
         try {
@@ -15,8 +18,10 @@ function SignUpForm({setUser}){
             res = await api.post('/api/auth/register',data);
             localStorage.setItem("token",res.data.token);
             setUser(res.data.user);
-        }catch (error) {
-            console.log("Error details:",error.response.data,error.response.status);
+        }catch (error ) {
+          if(axios.isAxiosError(error)){
+            console.log("Error details:",error?.response?.data,error?.response?.status);
+          }
         }
     }
 
