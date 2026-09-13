@@ -1,13 +1,15 @@
 import { JSX, useState } from "react";
 import Chat from "../../features/Chat/pages/Chat.jsx";
 import AppSidebar from "./components/AppSidebar.jsx";
-import FeatureShowCase from "./components/FeatureShowCase.jsx"
-import Profile from "../../features/Profile/pages/Profile.jsx"
+import FeatureShowCase from "./components/FeatureShowCase.jsx";
+import Profile from "../../features/Profile/pages/Profile.jsx";
 import Setting from "../../features/Setting/pages/Setting.jsx";
 
+type FeatureView = "chat"|"profile"|"setting";
+
+
 function MainLayer(){
-    type view = "chat"|"profile"|"setting"
-    const [activeView,setActiveView] = useState<view>("chat");
+    const [activeView,setActiveView] = useState<FeatureView>("chat");
     const isChat = activeView === "chat";
 
     interface IViewMap{
@@ -24,11 +26,11 @@ function MainLayer(){
 
     return<><div className="bg-background text-on-background font-body-md h-screen flex overflow-hidden pb-16 md:pb-0 md:pl-20">
         <AppSidebar selectView={setActiveView}/>
-        {viewMap[activeView]?.()}
+        {viewMap[activeView]()}
         {!isChat&& <FeatureShowCase/>}
         </div>
     </>
 }
 
-
+export type {FeatureView};
 export default MainLayer;
