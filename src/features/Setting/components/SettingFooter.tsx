@@ -1,4 +1,12 @@
-function SettingFooter({setSettingView}){
+import type { SettingView } from "../pages/Setting";
+
+interface prop{
+  setSettingView:(view:SettingView)=>void
+}
+
+
+
+function SettingFooter({setSettingView}:prop){
     return<><div className="mb-5 pl-5 pb-3">
   <button
     type="button"
