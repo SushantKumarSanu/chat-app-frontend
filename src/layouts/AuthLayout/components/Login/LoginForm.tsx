@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import api from "../../../../services/api.js";
 import "../../components/auth.css";
+import useUserStore from "../../../../app/store/userStore.js";
+import axios from "axios";
 
-import { useNavigate } from "react-router-dom";
 
-function LoginForm({setUser}) {
+
+function LoginForm() {
     
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
     const[visiblePassword,setVisiblePassword] = useState(false);
-
+    const setUser = useUserStore((state)=>state.setUser);
 
 
   return (
@@ -24,7 +26,8 @@ function LoginForm({setUser}) {
             localStorage.setItem("token",res.data.token);
             setUser(res.data.user);
         }catch(error){
-            console.error("Login failed:", error.response?.data || error.message)
+            if(axios.isAxiosError(error))
+            console.error("Login failed:", error?.response?.data || error.message)
         }
          setEmail("");
         setPassword("");
@@ -82,9 +85,9 @@ function LoginForm({setUser}) {
     transition-colors active:scale-[0.98] mt-2" type="submit" >LogIn
     </button>
 
-    <p class="text-center font-body-md text-body-md text-on-surface-variant mt-2">
+    <p className="text-center font-body-md text-body-md text-on-surface-variant mt-2">
         Don't have an account ?  
-        <a class="text-primary hover:text-on-surface transition-colors font-medium" href="/register">  SignUp here</a>
+        <a className="text-primary hover:text-on-surface transition-colors font-medium" href="/register">  SignUp here</a>
     </p>
     
   </form>
