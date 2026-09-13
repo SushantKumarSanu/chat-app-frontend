@@ -1,6 +1,15 @@
+import useUserStore from "../../../app/store/userStore";
+import { FeatureView } from "../MainLayout";
 
+interface prop{
+    selectView:(view:FeatureView)=>void
+}
 
-function AppSidebar({ user , selectView }) {
+function AppSidebar({selectView}:prop) {
+
+    const user = useUserStore((state)=>state.user);
+
+    
     const userAvatar = user?.avatar?.secure_url;
     const usersPrefix = user?.username?.slice(0,2);
   return (
