@@ -1,4 +1,11 @@
-function SettingNav({setSettingView}){
+import type { SettingView } from "../pages/Setting";
+
+interface prop{
+    setSettingView:(view:SettingView)=>void
+}
+
+
+function SettingNav({setSettingView}:prop){
     return<><div className="px-2 py-4">
         {/* Navigation */}
 
