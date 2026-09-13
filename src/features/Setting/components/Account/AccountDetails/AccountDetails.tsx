@@ -1,4 +1,16 @@
-function AccountDetails({ user , setSettingView , setAccountView}) {
+import useUserStore from "../../../../../app/store/userStore";
+import type { AccountView } from "../Account.jsx";
+
+interface prop{
+  setAccountView:(view:AccountView)=>void
+}
+
+
+
+function AccountDetails({setAccountView}:prop) {
+
+  const user = useUserStore((state)=>state.user);
+
   const userEmail = user?.email;
   return (
     <div className="p-6">
@@ -25,7 +37,7 @@ function AccountDetails({ user , setSettingView , setAccountView}) {
         <label className="block text-sm font-medium text-obsidian-muted">Email</label>
         <div className="flex items-center gap-2 ">
             <p className="w-full text-sm text-white">{userEmail}</p>
-            <button type="button" onClick={() => selectAccountView("changeEmail")} className="flex h-7 w-7 items-center 
+            <button type="button" className="flex h-7 w-7 items-center 
             justify-center rounded-full text-obsidian-muted hover:bg-primary-container/15 hover:text-on-surface transition-colors">
             <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>edit</span>
             </button>

@@ -23,5 +23,5 @@ function Account({setSettingView}:prop){
     return <>{viewAccountMap[accountView]()}</>
 };
 
-
+export type {AccountView}
 export default Account;
