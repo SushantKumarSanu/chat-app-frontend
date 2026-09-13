@@ -2,8 +2,6 @@ import { useState } from "react";
 import SettingNav from "../components/SettingNav.jsx";
 import Account from "../components/Account/Account.jsx";
 import SettingHeader from "../components/SettingHeader.jsx";
-import AccountDetails from "../components/Account/AccountDetails/AccountDetails.jsx"
-import UpdatePassword from "../components/Account/UpdatePassword/UpdatePassword.jsx";
 import SettingFooter from "../components/SettingFooter.jsx";
 import type { JSX } from "react";
 
@@ -29,7 +27,7 @@ function Setting(){
             backdrop-blur-xl border-r border-outline-variant/30  md:flex flex-col  shrink-0 relative z-40">
 
                 {/* Header */}
-                <SettingHeader settingView={settingView}/>
+                <SettingHeader/>
                  <div className="flex-1 min-h-0 overflow-y-auto">
                 {viewMap[settingView]()}
                 </div>
