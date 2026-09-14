@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
 import api from "../../../../services/api";
+import useUserStore from "../../../../app/store/userStore";
+import type { ProfileView } from "../../pages/Profile";
 
-function ProfileDetails({ user , selectPorfileView ,setUser}){
+interface prop{
+  selectPorfileView:(view:ProfileView)=>void
+}
 
-  const userName =  user?.username;
+function ProfileDetails({ selectPorfileView }:prop){
+
+  const user = useUserStore((state)=>state.user);
+  const setUser = useUserStore((state)=>state.setUser);
+
+
+
+  let userName =  user?.username;
+  let userAvatar = user?.avatar?.secure_url ;
+  let userEmail = user?.email;
+  let usersPrefix = userName?.slice(0,2) ;
+
+
+
   const [userNameInput,setUserNameInput] = useState(userName);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
-  const userAvatar = user?.avatar?.secure_url ;
-  const userEmail = user?.email;
-  const usersPrefix = userName.slice(0,2);
 
-  useEffect(()=>{
-    console.log("this is user name input",userNameInput)
-  },[userNameInput])
+
 
 
   const handleUserNameUpdate = async()=>{
@@ -21,12 +33,20 @@ function ProfileDetails({ user , selectPorfileView ,setUser}){
         userName:userNameInput
       });
       setIsEditingUsername(false);
-      setUser(prev=>{
-        return{
-          ...prev,
-          username:res.data.username
-        }
-      })
+
+      if(res.data.username && user){
+        
+      const updatedUser = {
+        ...user,
+        username:res.data.username
+      };
+
+      setUser(updatedUser)
+
+
+      }
+
+      
       console.log(res.data);
 
     } catch (error) {
