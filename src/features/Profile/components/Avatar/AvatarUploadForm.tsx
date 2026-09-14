@@ -1,37 +1,37 @@
 import { useEffect, useRef, useState } from "react";
 import api from "../../../../services/api";
-function AvatarUploadForm({ selectAvatarView , selectPorfileView , profileView , setUser }){
+import useUserStore from "../../../../app/store/userStore";
+import type { ProfileView } from "../../pages/Profile";
+import type { AvatarView } from "./Avatar";
 
 
-    const [selectedAvatar,setSelectedAvatar]= useState();
-    const fileInputRef = useRef(null);
+interface prop{
+    selectAvatarView:(view:AvatarView)=>void,
+    setProfileView:(view:ProfileView)=>void
+}
 
-    useEffect(()=>{
-        console.log("This is selected image url",selectedAvatar);
-    },[selectedAvatar]);
+
+function AvatarUploadForm({ selectAvatarView , setProfileView  }: prop){
+
+    const setUser = useUserStore((state)=>state.setUser);
+
+
+    const [selectedAvatar,setSelectedAvatar]= useState("");
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleProfileAvatar = async ()=>{
-        const file = fileInputRef.current?.files[0];
+        const file = fileInputRef.current?.files?.[0];
         if(!file) return ;
-        const blobUrl = URL.createObjectURL(file);
         const formData = new FormData ();
         formData.append('avatar',file);
         let res;
 
         try {
             res = await api.patch("/api/protected/profile/avatar",formData);
-            const avatar_url = res.data.user?.avatar?.secure_url;
+            // const avatar_url = res.data.user?.avatar?.secure_url;
 
-            setUser(prev=>{
-                return{
-                    ...prev,
-                    avatar: {
-                    ...prev.avatar,
-                    secure_url:avatar_url
-                    }
-                }
-            })
-            selectPorfileView(null);
+            setUser(res.data.user);
+            setProfileView(null);
             
         } catch (error) {
             console.log(error);
@@ -61,7 +61,7 @@ onClick={()=>{fileInputRef.current?.click();}}>
 </>) }
 <input ref={fileInputRef}  className="hidden"   accept="image/*" id="file-input" type="file" 
 onChange={()=>{
-    const file = fileInputRef.current?.files[0];
+    const file = fileInputRef.current?.files?.[0];
     if(!file) return ;
     const blobUrl = URL.createObjectURL(file);
     setSelectedAvatar(blobUrl)
@@ -77,7 +77,7 @@ transition-colors" id="back-to-options" onClick={()=>{selectAvatarView("avatarDi
 <div className="flex space-x-3">
 <button className="px-4 py-2 rounded-lg text-sm font-medium text-obsidian-muted hover:text-white
  hover:bg-obsidian-input transition-colors" id="cancel-modal-btn-new" 
- onClick={()=>{selectPorfileView(null)}}>Cancel</button>
+ onClick={()=>{setProfileView(null)}}>Cancel</button>
 <button className="px-6 py-2 rounded-lg text-sm font-medium bg-white text-obsidian-bg
  hover:bg-obsidian-text transition-colors" 
  onClick={handleProfileAvatar}>Save Photo</button>
