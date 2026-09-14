@@ -1,9 +1,16 @@
-function AvatarOptionsDialog({selectPorfileView,selectAvatarView}){
+import type { AvatarView } from "./Avatar";
+import type { ProfileView } from "../../pages/Profile";
+interface prop{
+  selectProfileView:(view:ProfileView)=>void,
+  selectAvatarView : (view:AvatarView)=>void
+}
+
+function AvatarOptionsDialog({selectProfileView,selectAvatarView}:prop){
     return<>
   {/* <!-- Header --> */}
 <div className="p-6 border-b border-obsidian-input flex justify-between items-center">
 <h2 className="text-xl font-semibold text-white" id="modal-title">Profile Photo</h2>
-<button className="text-obsidian-muted hover:text-white transition-colors" id="close-modal-btn" onClick={()=>{selectPorfileView("") ; selectAvatarView(""); }}>
+<button className="text-obsidian-muted hover:text-white transition-colors" id="close-modal-btn" onClick={()=>{selectProfileView(null) ; }}>
 <span className="material-symbols-outlined">close</span>
 </button>
 </div>
@@ -18,7 +25,9 @@ function AvatarOptionsDialog({selectPorfileView,selectAvatarView}){
 <p className="text-xs text-obsidian-muted">See your current profile picture</p>
 </div>
 </button>
-<button className="w-full flex items-center space-x-4 p-4 rounded-lg  hover:bg-obsidian-input bg-obsidian-panel border border-obsidian-input transition-colors text-left group" id="trigger-upload-view" onClick={()=>{selectAvatarView("avatarUploadForm")}}>
+<button className="w-full flex items-center space-x-4 p-4 rounded-lg  hover:bg-obsidian-input bg-obsidian-panel border 
+border-obsidian-input transition-colors text-left group" id="trigger-upload-view" 
+onClick={()=>{selectAvatarView("avatarUploadForm")}}>
 <div className="w-10 h-10 rounded-full bg-obsidian-bg flex items-center justify-center text-obsidian-muted group-hover:text-white">
 <span className="material-symbols-outlined">upload</span>
 </div>
