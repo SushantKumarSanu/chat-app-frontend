@@ -14,13 +14,13 @@ function ProfilePanel(){
 
   
   const profileViewMap:Record<PRofileViewKey,()=>JSX.Element>= {
-    "avatar" : () => <Avatar selectPorfileView={setProfileView} profileView={profileView} />,
+    "avatar" : () => <Avatar selectProfileView={setProfileView} setProfileView={setProfileView} />,
 
   }
 
 
     return <>
-    <ProfileDetails  selectPorfileView={setProfileView}/>
+    <ProfileDetails  selectProfileView={setProfileView}/>
     {profileView && profileViewMap[profileView]()}
     
     </>

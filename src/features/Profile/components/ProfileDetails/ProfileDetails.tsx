@@ -4,10 +4,10 @@ import useUserStore from "../../../../app/store/userStore";
 import type { ProfileView } from "../../pages/Profile";
 
 interface prop{
-  selectPorfileView:(view:ProfileView)=>void
+  selectProfileView:(view:ProfileView)=>void
 }
 
-function ProfileDetails({ selectPorfileView }:prop){
+function ProfileDetails({ selectProfileView }:prop){
 
   const user = useUserStore((state)=>state.user);
   const setUser = useUserStore((state)=>state.setUser);
@@ -76,7 +76,7 @@ function ProfileDetails({ selectPorfileView }:prop){
         </div>
         <div className="absolute bottom-1 right-1 bg-obsidian-input w-8 h-8  rounded-[9999px] border border-obsidian-panel
          text-white flex items-center justify-center cursor-pointer hover:bg-primary-interactive hover:scale-110 
-         transition-all duration-300"onClick={()=>{selectPorfileView("avatar")}}>
+         transition-all duration-300"onClick={()=>{selectProfileView("avatar")}}>
         <span className="material-symbols-outlined " style={{ fontSize: "14px" }}>edit</span>
         </div>
       </div>

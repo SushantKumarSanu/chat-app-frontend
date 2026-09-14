@@ -18,7 +18,7 @@ function Avatar({ selectProfileView , setProfileView }:prop){
     const[avatarView,setAvatarView]=useState<AvatarView>("avatarDialog");
 
     const avatarViewMap:Record<AvatarView,()=>JSX.Element>={
-        "avatarDialog" : ()=><AvatarOptionsDialog selectAvatarView={setAvatarView}  selectPorfileView={selectProfileView}/>,
+        "avatarDialog" : ()=><AvatarOptionsDialog selectAvatarView={setAvatarView}  selectProfileView={selectProfileView}/>,
         "avatarUploadForm" : () => <AvatarUploadForm  selectAvatarView={setAvatarView} setProfileView={setProfileView}
          /> 
     }
