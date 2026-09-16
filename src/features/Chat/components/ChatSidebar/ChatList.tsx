@@ -1,36 +1,39 @@
-import { useEffect } from "react";
+import useUserStore from "../../../../app/store/userStore";
+import { useChatStore } from "../../store/chatStore";
+import type { Chat } from "../../types/chat.type";
+
+function ChatList({}){
+
+    const otherUsersActivity = useChatStore((state)=>state.otherUsersActivity);
+    const user = useUserStore((state)=>state.user);
+    const userId = String(user?._id);
+
+    const activeChat = useChatStore((state)=>state.activeChat);
+    const setActiveChat = useChatStore((state)=>state.setActiveChat);
+
+    const chatList = useChatStore((state)=>state.chatList);
+    const updateChatList = useChatStore((state)=>state.updateChatList)
 
 
 
 
-
-function ChatList({ chatlist , user , onSelectChat , otherUserActivity , setChatlist , activeChat }){
-
-
-
-    const userId = String(user?._id) ;
-
-
-
-    const handleSelectChat = (chat)=>{
-        
+    const handleSelectChat = (chat:Chat)=>{
         const modifiedChat = 
         {
             ...chat,
             unreadCount:0
         };
 
-        onSelectChat(modifiedChat);
-
-        setChatlist(prev=>
-            prev.map((chat)=>{
+        setActiveChat(modifiedChat);
+        updateChatList((chatList)=>{
+            return chatList.map((chat)=>{
                 if(String(chat._id)===String(modifiedChat._id))
                 {
                     return{...chat,...modifiedChat}
                 };
                 return chat;
             })
-        )
+        })
     }; 
 
 
@@ -38,12 +41,12 @@ function ChatList({ chatlist , user , onSelectChat , otherUserActivity , setChat
 
     return<><div className="flex-1 overflow-y-auto px-2">
         {
-            chatlist?.map((chat)=>{
+            chatList.map((chat)=>{
 
                 const otherUser = userId ? chat.users.find(u => String(u._id) !== userId) : null;
                 const otherUserName = otherUser?.username??"Guest" ;
                 const othersAvatar = otherUser?.avatar?.secure_url ;
-                const activity = otherUserActivity[otherUser?._id];
+                const activity = otherUser ? otherUsersActivity[otherUser._id]:undefined;
                 const othersprefix = otherUserName.slice(0,2);
 
                 const isActive = String(activeChat?._id) === String(chat._id);
