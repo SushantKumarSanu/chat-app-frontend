@@ -1,8 +1,5 @@
 
-function SidebarHeader({user}){
-
-    
-    const userName = user?.username;
+function SidebarHeader(){
 
 
 
@@ -12,11 +9,6 @@ function SidebarHeader({user}){
 <span className="material-symbols-outlined">edit_square</span>
 </button>
 </div>
-        
-        // <div className="sidebar-header">
-        //         <div className="avatar">PFL</div>
-        //         <span className="name">{userName}</span>
-        // </div>
 
 }
 
