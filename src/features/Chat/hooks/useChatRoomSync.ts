@@ -1,21 +1,26 @@
 import { socket } from "../../../services/socket";
 import { useEffect, useRef } from "react";
+import { useChatStore } from "../store/chatStore";
 
-function useChatRoomSync({chatlist}){
+function useChatRoomSync(){
     
-    const joinedChat = useRef(new Set());
+    const chatList = useChatStore((state)=>state.chatList); 
+
+
+
+    const joinedChat = useRef(new Set<string>());
 
 
     useEffect(()=>{
-        if(chatlist.length===0) return;
+        if(chatList.length===0) return;
 
-        chatlist.forEach((chat)=>{
+        chatList.forEach((chat)=>{
             if(!joinedChat.current.has(chat._id)){
             socket.emit("join chat",chat._id);
             joinedChat.current.add(chat._id);
             };
         });
 
-    },[chatlist]);
+    },[chatList]);
 }
 export default useChatRoomSync;
