@@ -1,16 +1,18 @@
 import type { StateCreator } from "zustand";
-import type { OtherUserActivity } from "../../types/otherUsersActivity.type";
+import type { OtherUsersActivity } from "../../types/otherUsersActivity.type";
 
 
 interface OtherUsersActivityState{
-    otherUserActivity:OtherUserActivity,
-    setOtherUserActivity:(otherUserActivity:OtherUserActivity)=>void
+    otherUsersActivity:OtherUsersActivity,
+    setOtherUsersActivity:(otherUserActivity:OtherUsersActivity)=>void
+    updateOtherUsersActivity:(update:(otherUserActivity:OtherUsersActivity)=>OtherUsersActivity)=>void
 }
 
 
-export const createOtherUserActivitySlice:StateCreator<OtherUsersActivityState>=(set)=>({
-    otherUserActivity:{},
-    setOtherUserActivity:(otherUserActivity)=>set({otherUserActivity})
+export const createOtherUsersActivitySlice:StateCreator<OtherUsersActivityState>=(set)=>({
+    otherUsersActivity:{},
+    setOtherUsersActivity:(otherUsersActivity)=>set({otherUsersActivity}),
+    updateOtherUsersActivity:(update)=>set(state=>({otherUsersActivity:update(state.otherUsersActivity)}))
 });
 
 
