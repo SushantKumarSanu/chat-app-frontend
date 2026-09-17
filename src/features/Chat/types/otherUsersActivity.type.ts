@@ -1,12 +1,12 @@
 interface Activity{
     isOnline:boolean,
-    typing:boolean
+    typing:string|undefined
 }
 
 
 
-type OtherUserActivity = Record<string,Activity>
+type OtherUsersActivity = Record<string,Activity>
 
 
 
-export type {OtherUserActivity};
+export type {OtherUsersActivity};
