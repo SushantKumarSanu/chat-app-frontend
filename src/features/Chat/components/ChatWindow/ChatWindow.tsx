@@ -1,24 +1,17 @@
-import { useEffect, useRef} from 'react';
 import 'remixicon/fonts/remixicon.css';
 import ChatHeader from './ChatHeader.jsx';
 import MessageList from './MessageList.jsx';
 import MessageInput from './MessageInput.jsx';
+import { useChatStore } from '../../store/chatStore.js';
 
-function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity}){
-  
-    const messageEndRef = useRef(null);
-
-
-
-    const scrollToBottom = ()=>{
-        messageEndRef.current?.scrollIntoView({behavior:"smooth"});
-    };
+function ChatWindow({messageLoading}:{messageLoading:boolean}){
+  const activeChat = useChatStore(state=>state.activeChat);
 
 
 
-    useEffect(()=>{
-        scrollToBottom();
-    },[messages]);
+
+
+
 
     if(!activeChat?._id){
         return(
@@ -36,15 +29,14 @@ function ChatWindow({activeChat,user,messages,messageLoading,otherUserActivity})
             backgroundAttachment: "fixed",
         }} data-stitch-orig-opacity="0.85">
 
-            <ChatHeader activeChat={activeChat} user={user} otherUserActivity={otherUserActivity}/>
+            <ChatHeader />
             
             {messageLoading?
             (<div className="loading">Loading...</div>)
             :
-            (<MessageList activeChat={activeChat} messages={messages} otherUserActivity={otherUserActivity} user={user} messageEndRef={messageEndRef}/>)
+            (<MessageList/>)
             }
-    
-            <MessageInput activeChat={activeChat} />
+            <MessageInput  />
                 
         </div>)            
 }
