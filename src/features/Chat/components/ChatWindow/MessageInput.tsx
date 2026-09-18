@@ -1,9 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import api from "../../../../services/api.js";
 import { socket } from '../../../../services/socket.js';
+import { useChatStore } from "../../store/chatStore.js";
+import type { ChangeEvent , FormEvent } from "react";
+import axios from "axios";
 
-function MessageInput({activeChat}){
+function MessageInput(){
 
+
+  const activeChat = useChatStore(state=>state.activeChat);
 
 
 
@@ -11,12 +16,12 @@ function MessageInput({activeChat}){
     const [sending,setSending] = useState(false);
     const [isTyping,setIsTyping] = useState(false);
 
-    const typingTimeoutRef = useRef(null);
+    const typingTimeoutRef = useRef<number|null>(null);
     
 
 
 
-    const handleMessageSubmission = async(e)=>{
+    const handleMessageSubmission = async(e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
 
         const trimmed = message.trim();
@@ -24,7 +29,7 @@ function MessageInput({activeChat}){
         setSending(true);
 
         try{
-            const res = await api.post("/api/messages/messages",{
+            await api.post("/api/messages/messages",{
             content:trimmed,
             chatId:activeChat?._id 
             });
@@ -32,6 +37,7 @@ function MessageInput({activeChat}){
             setMessage("");
 
             }catch(error){
+              if(axios.isAxiosError(error))
                 console.error("Message send failed:", error.response?.data || error.message);
             }finally{
                 setSending(false)
@@ -40,7 +46,7 @@ function MessageInput({activeChat}){
 
 
 
-    const handleMessageInput = (e)=>{
+    const handleMessageInput = (e:ChangeEvent<HTMLTextAreaElement>)=>{
 
         setMessage(e.target.value);
 
@@ -73,8 +79,9 @@ function MessageInput({activeChat}){
     useEffect(()=>{
         return ()=>{
             setIsTyping(false)
-            if(typingTimeoutRef.current){
+            if(typingTimeoutRef.current !== null){
                 clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current == null 
             }
             socket.emit("stop typing",activeChat?._id);
         }
@@ -100,7 +107,7 @@ function MessageInput({activeChat}){
         value={message}
         onChange={handleMessageInput}
         placeholder="Type a message..."
-        rows="1"
+        rows={1}
         className="w-full bg-transparent border-none outline-none focus:ring-0 text-on-surface font-body-md resize-none max-h-20 py-1 px-1 placeholder:text-on-surface-variant/40 leading-normal"
       />
 
