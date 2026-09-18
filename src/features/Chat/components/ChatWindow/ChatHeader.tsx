@@ -1,7 +1,11 @@
+import useUserStore from "../../../../app/store/userStore";
+import { useChatStore } from "../../store/chatStore";
 
 
-function ChatHeader({ activeChat , user , otherUserActivity }){
-
+function ChatHeader(){
+    const user = useUserStore((state)=>state.user);
+    const activeChat = useChatStore(state=>state.activeChat);
+    const otherUsersActivity = useChatStore(state=>state.otherUsersActivity);
 
     const otherUser =  activeChat?.users?.find( 
         u=> String(u._id) !==String(user?._id)
@@ -13,7 +17,7 @@ function ChatHeader({ activeChat , user , otherUserActivity }){
     const othersAvatar = otherUser?.avatar?.secure_url ;
     const othersprefix = otherUserName.slice(0,2);
 
-    const activity = otherUserActivity[otherUserId];
+    const activity = otherUserId? otherUsersActivity[otherUserId] : undefined;
 
 
 
@@ -24,11 +28,11 @@ function ChatHeader({ activeChat , user , otherUserActivity }){
                 {othersAvatar?<img className="w-9 h-9 rounded-[9999px] object-cover shadow-sm" src={othersAvatar} alt="" />:<div className="w-10 h-10 rounded-[9999px] bg-gradient-to-br from-secondary-container to-surface-variant text-on-secondary-container flex items-center justify-center shrink-0 font-headline-md font-bold shadow-sm">{othersprefix}</div>}
                 {activity?.isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] z-20 border-2 border-surface/70 animate-pulse"></div>}
             </div>
-            {activity?.isOnline && (<span className="status-dot online"></span>)}
+            {/* {activity?.isOnline && (<span className="status-dot online"></span>)} */}
         
 
             <div>
-                <h1 className='font-headline-md text-headline-md font-bold text-on-surface'>{otherUser?.username}</h1> 
+                <h1 className='font-headline-md text-headline-md font-bold text-on-surface'>{otherUserName}</h1> 
 
                 <div className="flex items-center gap-2">
                 {activity?.typing &&(
@@ -42,13 +46,16 @@ function ChatHeader({ activeChat , user , otherUserActivity }){
             </div>
         </div>
         <div className="flex items-center gap-1">
-            <button aria-label="video_call" className="p-2 md:p-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-2xl cursor-pointer transition-all duration-300 ease-out active:scale-90">
+            <button aria-label="video_call" className="p-2 md:p-2.5 text-on-surface-variant hover:text-on-surface 
+            hover:bg-surface-variant/50 rounded-2xl cursor-pointer transition-all duration-300 ease-out active:scale-90">
                 <span className="material-symbols-outlined text-[20px] md:text-[22px]">video_call</span>
             </button>
-            <button aria-label="call" className="p-2 md:p-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-2xl cursor-pointer transition-all duration-300 ease-out active:scale-90">
+            <button aria-label="call" className="p-2 md:p-2.5 text-on-surface-variant hover:text-on-surface 
+            hover:bg-surface-variant/50 rounded-2xl cursor-pointer transition-all duration-300 ease-out active:scale-90">
                 <span className="material-symbols-outlined text-[20px] md:text-[22px]">call</span>
             </button>
-            <button aria-label="more_vert" className="p-2 md:p-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-2xl cursor-pointer transition-all duration-300 ease-out active:scale-90">
+            <button aria-label="more_vert" className="p-2 md:p-2.5 text-on-surface-variant hover:text-on-surface
+             hover:bg-surface-variant/50 rounded-2xl cursor-pointer transition-all duration-300 ease-out active:scale-90">
                 <span className="material-symbols-outlined text-[20px] md:text-[22px]">more_vert</span>
             </button>
         </div>
