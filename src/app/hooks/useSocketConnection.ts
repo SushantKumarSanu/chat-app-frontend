@@ -1,8 +1,14 @@
 import { useEffect } from "react";
 import { socket } from "../../services/socket";
+import useUserStore from "../store/userStore";
 
 
-function useSocketConnection({user}){
+function useSocketConnection(){
+
+  const user = useUserStore((state)=>state.user);
+
+
+
     useEffect(()=>{
         if(!user?._id) return;
         const token = localStorage.getItem("token");
