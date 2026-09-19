@@ -30,7 +30,7 @@ function useChatInitialization(){
                 if(otherusers?._id){
                     usersInitalActvivties[otherusers._id] = {
                         isOnline:otherusers.isOnline,
-                        typing:false
+                        typing:undefined
                     }
                 }
                 });
