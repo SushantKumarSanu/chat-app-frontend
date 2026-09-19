@@ -9,16 +9,19 @@ import type { OtherUsersActivityState } from "./slices/otherUserActivitySlice";
 import { createChatListSlice } from "./slices/chatListSlice";
 import { createActiveChatSlice } from "./slices/activeChatSlice";
 import { createMessagesSlice } from "./slices/messagesSlice";
-import { createOtherUserActivitySlice } from "./slices/otherUserActivitySlice";
+import { createOtherUsersActivitySlice } from "./slices/otherUserActivitySlice";
 
 type ChatStore = ActiveChatState & ChatListState & MessagesState & OtherUsersActivityState
 
 
-const useChatStore = create<ChatStore>()(
+export const useChatStore = create<ChatStore>()(
     devtools((...args)=>({
         ...createChatListSlice(...args),
         ...createActiveChatSlice(...args),
         ...createMessagesSlice(...args),
-        ...createOtherUserActivitySlice(...args)
+        ...createOtherUsersActivitySlice(...args)
     }))
 );
+
+
+
