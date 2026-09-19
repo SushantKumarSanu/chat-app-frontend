@@ -21,13 +21,13 @@ interface ReqChat{
     
         groupAdmin?:string,
     
-        lastMessage?:{
+        lastMessage:{
     
-            messageId?:string,
+            messageId:string,
     
-            sender?:string,
+            sender:string,
     
-            content?:string
+            content:string
         }
     
         createdAt:string,
