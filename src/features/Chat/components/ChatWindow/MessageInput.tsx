@@ -81,7 +81,7 @@ function MessageInput(){
             setIsTyping(false)
             if(typingTimeoutRef.current !== null){
                 clearTimeout(typingTimeoutRef.current);
-                typingTimeoutRef.current == null 
+                typingTimeoutRef.current = null 
             }
             socket.emit("stop typing",activeChat?._id);
         }
