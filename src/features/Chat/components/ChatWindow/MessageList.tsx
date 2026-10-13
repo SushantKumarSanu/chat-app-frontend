@@ -1,19 +1,26 @@
-import  React,{ useEffect, useRef } from 'react';
+import  React,{ useEffect, useRef, useState } from 'react';
+import axios from "axios";
 import useUserStore from '../../../../app/store/userStore.js';
 import { useChatStore } from '../../store/chatStore.js';
 import { formatTime } from '../../utils/formatTime.js';
+import api from '../../../../services/api.js';
 
 function MessageList(){
 
-    
 
   const user = useUserStore(state=>state.user);
   const activeChat = useChatStore(state=>state.activeChat);
   const messages = useChatStore(state=>state.messages);
+  const updateMessages = useChatStore(state=>state.updateMessages);
   const otherUsersActivity = useChatStore(state=>state.otherUsersActivity);
 
   const messageEndRef = useRef<HTMLDivElement|null>(null);
+  const page = useRef(2);
+  const [hasMoreMessages,setHasMoreMessages] = useState(true);
+  const [loadingOlderMessages,setLoadingOlderMessages]=useState(false);
 
+  // const loadingOlderMessages = useRef(false);
+  const isPaginating = useRef(false)
 
   const otherUser =  activeChat?.users?.find( 
     u=> String(u._id) !==String(user?._id))?? null ;
@@ -26,13 +33,58 @@ function MessageList(){
     messageEndRef.current?.scrollIntoView({behavior:"smooth"});
   };
 
+
+
+
   useEffect(()=>{
+    if(isPaginating.current){
+      isPaginating.current = false;
+      return;
+    }
     scrollToBottom();
-  },[messages,activity?.typing]);
+
+    },[messages,activity?.typing]);
 
 
 
-    return (<div className="flex-1 overflow-y-auto pt-20 md:pt-24 pb-6 px-4 md:px-container-margin flex flex-col gap-stack-gap">
+  useEffect(()=>{
+    page.current = 2;
+    setLoadingOlderMessages(false);
+     setHasMoreMessages(true);
+  },[activeChat?._id,setLoadingOlderMessages,setHasMoreMessages]);
+
+
+    return (<div 
+      onScroll={async(e)=>{
+        try{
+          const element = e.currentTarget;
+          if(element.scrollTop===0 && !loadingOlderMessages && hasMoreMessages){
+            setLoadingOlderMessages(true);
+
+            const res = await api.get(`/api/messages/messages/${activeChat?._id}?limit=20&page=${page.current}`);
+            const fetchedMessages =  [...res.data].reverse();
+            if(fetchedMessages.length===0){
+              return setHasMoreMessages(false);
+            } 
+            console.log("this are older messages",fetchedMessages);
+            isPaginating.current = true
+
+            updateMessages((messages)=>{
+              const newMessages = [...fetchedMessages,...messages];
+              return newMessages;
+            });
+            page.current = page.current + 1;
+          };
+        }catch(error){
+                if(axios.isAxiosError(error)){
+                    console.error(error.message);
+                    console.error(error.stack);
+                };
+        }finally{
+          setLoadingOlderMessages(false);
+        }
+    }} className="flex-1 overflow-y-auto pt-20 md:pt-24 pb-6 px-4 md:px-container-margin flex flex-col gap-stack-gap">
+              {loadingOlderMessages && <div>Messages are loading</div>}
               {messages.map(msg =>{
                 const otherUserName = otherUser?.username??"Guest" ;
                 const othersAvatar = otherUser?.avatar?.secure_url ;
