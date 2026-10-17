@@ -4,6 +4,19 @@ import useUserStore from '../../../../app/store/userStore.js';
 import { useChatStore } from '../../store/chatStore.js';
 import { formatTime } from '../../utils/formatTime.js';
 import api from '../../../../services/api.js';
+import DeleteMessageDialogBox from './DeleteMessageDialogBox.jsx';
+
+
+
+interface DeleteMessage{
+    messageId:string,
+    content:string,
+    createdAt:string,
+    isMine:boolean,
+    userName:string
+  };
+
+
 
 function MessageList(){
 
@@ -18,9 +31,10 @@ function MessageList(){
   const page = useRef(2);
   const [hasMoreMessages,setHasMoreMessages] = useState(true);
   const [loadingOlderMessages,setLoadingOlderMessages]=useState(false);
+  const [deleteMessage,setDeleteMessage]=useState<DeleteMessage|null>(null);
 
-  // const loadingOlderMessages = useRef(false);
-  const isPaginating = useRef(false)
+  const isPaginating = useRef(false);
+  const isDeletingMessage = useRef(false);
 
   const otherUser =  activeChat?.users?.find( 
     u=> String(u._id) !==String(user?._id))?? null ;
@@ -34,29 +48,8 @@ function MessageList(){
   };
 
 
-
-
-  useEffect(()=>{
-    if(isPaginating.current){
-      isPaginating.current = false;
-      return;
-    }
-    scrollToBottom();
-
-    },[messages,activity?.typing]);
-
-
-
-  useEffect(()=>{
-    page.current = 2;
-    setLoadingOlderMessages(false);
-     setHasMoreMessages(true);
-  },[activeChat?._id,setLoadingOlderMessages,setHasMoreMessages]);
-
-
-    return (<div 
-      onScroll={async(e)=>{
-        try{
+  const handleOlderMessages = async(e: React.UIEvent<HTMLDivElement>)=>{
+    try{
           const element = e.currentTarget;
           if(element.scrollTop===0 && !loadingOlderMessages && hasMoreMessages){
             setLoadingOlderMessages(true);
@@ -83,8 +76,32 @@ function MessageList(){
         }finally{
           setLoadingOlderMessages(false);
         }
-    }} className="flex-1 overflow-y-auto pt-20 md:pt-24 pb-6 px-4 md:px-container-margin flex flex-col gap-stack-gap">
+  };
+
+
+  useEffect(()=>{
+    if(isPaginating.current||isDeletingMessage.current){
+      isPaginating.current = false;
+      isDeletingMessage.current = false
+      return;
+    }
+    scrollToBottom();
+
+    },[messages,activity?.typing]);
+
+
+
+  useEffect(()=>{
+    page.current = 2;
+    setLoadingOlderMessages(false);
+     setHasMoreMessages(true);
+  },[activeChat?._id,setLoadingOlderMessages,setHasMoreMessages]);
+
+
+    return (<div 
+      onScroll={handleOlderMessages} className="flex-1 overflow-y-auto pt-20 md:pt-24 pb-6 px-4 md:px-container-margin flex flex-col gap-stack-gap">
               {loadingOlderMessages && <div>Messages are loading</div>}
+
               {messages.map(msg =>{
                 const otherUserName = otherUser?.username??"Guest" ;
                 const othersAvatar = otherUser?.avatar?.secure_url ;
@@ -94,12 +111,25 @@ function MessageList(){
 
                 const deliveredTo = msg.deliveredTo.includes(otherUserId);
                 const isRead = (String(activeChat?.lastRead?.[otherUserId]) === String(msg._id)) ;
-
-
                 return(
+                  
                       <React.Fragment key={msg._id}>
                         {isMine ?
-                        <div key={msg._id} className="flex items-end gap-2 max-w-[90%] md:max-w-[80%] self-end group mt-2">
+                        <div  className="flex items-end gap-2 max-w-[90%] md:max-w-[80%] self-end group mt-2">
+                          <button aria-label="Delete message" className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 
+                          bg-surface-container-high/90 hover:bg-error/20 text-on-surface-variant hover:text-error p-1.5 rounded-full shadow-sm 
+                          flex items-center justify-center flex-shrink-0"
+                           onClick={()=>setDeleteMessage({
+                            messageId:msg._id,
+                            content:msg.content,
+                            createdAt:msg.createdAt,
+                            isMine:true,
+                            userName:"You"
+                          })}>
+
+                            <span className="material-symbols-outlined !text-[18px]">delete</span>
+
+                          </button>
                           <div className="bg-gradient-to-br from-primary-container/25 to-surface-variant/50 border 
                           border-primary/20 shadow-lg shadow-primary/5 text-white p-message-padding rounded-3xl 
                           rounded-br-md font-body-md transition-transform duration-300 group-hover:-translate-y-0.5">
@@ -112,7 +142,9 @@ function MessageList(){
                           </div>
                         </div>
                         :
-                        <div key={msg._id} className="flex items-end gap-2 md:gap-3 max-w-[90%] md:max-w-[80%] group">{othersAvatar ? (
+                        <div className="flex items-end gap-2 md:gap-3 max-w-[90%] md:max-w-[80%] group"
+                        >
+                          {othersAvatar ? (
                           <img src={othersAvatar} alt="" className="w-8 h-8 md:w-10 md:h-10 rounded-[9999px] object-cover shrink-0 shadow-sm"/>
                           ) : (
                           <div className="w-10 h-10  rounded-[9999px] bg-gradient-to-br from-secondary-container to-surface-variant 
@@ -120,13 +152,27 @@ function MessageList(){
                           {othersprefix}
                           </div>)}
 
-                          <div className="bg-[#1f1f26]/30 backdrop-blur-xl border border-outline-variant/20 shadow-lg shadow-black/20 text-white p-message-padding rounded-3xl rounded-bl-md font-body-md transition-transform duration-300 group-hover:-translate-y-0.5">
+                          <div className="bg-[#1f1f26]/30 backdrop-blur-xl border border-outline-variant/20 shadow-lg 
+                          shadow-black/20 text-white p-message-padding rounded-3xl rounded-bl-md font-body-md 
+                          transition-transform duration-300 group-hover:-translate-y-0.5">
                             <p className="leading-relaxed">{msg.content}</p>
 
                             <div className="flex items-center justify-end gap-1 mt-1 opacity-70">
                               <span className="text-[10px] font-label-sm">{formatTime(msg.createdAt)}</span>
                             </div>
                           </div>
+                          <button aria-label="Delete message" className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 
+                          bg-surface-container-high/90 hover:bg-error/20  text-on-surface-variant hover:text-error p-1.5 rounded-full shadow-sm 
+                          flex items-center justify-center flex-shrink-0"
+                          onClick={()=>setDeleteMessage({
+                            messageId:msg._id,
+                            content:msg.content,
+                            createdAt:msg.createdAt,
+                            isMine:false,
+                            userName:otherUserName 
+                          })}>
+                            <span className="material-symbols-outlined !text-[18px]">delete</span>
+                            </button>
                         </div>}
                       </React.Fragment>            
                     )
@@ -142,11 +188,13 @@ function MessageList(){
                     typing-dot"></span><span className="w-1.5 h-1.5 bg-on-surface-variant/70 rounded-full 
                     typing-dot"></span><span className="w-1.5 h-1.5 bg-on-surface-variant/70 rounded-full typing-dot"></span></div>
                 )} 
-                                <div ref={messageEndRef}/>
+              <div ref={messageEndRef}/>
 
-            </div>)
+              {deleteMessage && <DeleteMessageDialogBox isDeleting={isDeletingMessage} selectedMessage={deleteMessage} setDeleteMessage={setDeleteMessage}/>}
+             
+              </div>)
 
 }
 
-
+export type {DeleteMessage}
 export default MessageList;
