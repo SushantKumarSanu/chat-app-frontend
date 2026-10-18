@@ -28,46 +28,38 @@ function DeleteMessageDialogBox({selectedMessage,setDeleteMessage,isDeleting}:pr
 
       if(res.data.chatId){
         updateActiveChat((chat)=>{
+          if(res.data.lastRead){
+            return{...chat,lastMessage:res.data.lastMessage,lastRead:res.data.lastRead};
+          }
           return{...chat,lastMessage:res.data.lastMessage}
         });
 
         updateChatList((chatList)=>{
           return chatList.map((chat)=>{
+
             if(chat._id===res.data.chatId){
+              if(res.data.lastRead){
+                return{...chat,lastMessage:res.data.lastMessage,lastRead:res.data.lastRead};
+              };
               return{...chat,lastMessage:res.data.lastMessage}
             }
             return chat
           })
         });
 
-        updateMessages((messages)=>{
-          return messages.map((message)=>{
-            if(message._id===selectedMessage.messageId){
-              return{...message,content:"This message was deleted by you."}
-            }
-            return message;
-          });
-        });
-      }else{
-        updateMessages((messages)=>{
-          return messages.map((message)=>{
-            if(message._id===selectedMessage.messageId){
-              return{...message,content:"This message was deleted by you."}
-            }
-            return message;
-          });
-        }); 
       }
+      updateMessages((messages)=>{
+        return messages.map((message)=>{
+        if(message._id===selectedMessage.messageId){
+          return{...message,content:"This message was deleted by you."}
+        }
+          return message;
+        });
+      }); 
       setDeleteMessage(null);
     } catch (error) {
        if (axios.isAxiosError(error)) {
     console.error("Axios error:", error);
-    console.error("Status:", error.response?.status);
-    console.error("Status text:", error.response?.statusText);
-    console.error("Response data:", error.response?.data);
-    console.error("Response headers:", error.response?.headers);
-    console.error("Request URL:", error.config?.url);
-    console.error("Request method:", error.config?.method);
   } else {
     console.error("Unknown error:", error);
   }
