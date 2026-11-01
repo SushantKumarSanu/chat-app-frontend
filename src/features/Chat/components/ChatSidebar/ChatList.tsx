@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import useUserStore from "../../../../app/store/userStore";
 import { useChatStore } from "../../store/chatStore";
 import type { Chat } from "../../types/chat.type";
+import { motion, AnimatePresence } from "motion/react";
 
-function ChatList({}){
+function ChatList({searchQuery}:{searchQuery:string}){
 
     const otherUsersActivity = useChatStore((state)=>state.otherUsersActivity);
     const user = useUserStore((state)=>state.user);
@@ -34,14 +36,33 @@ function ChatList({}){
                 return chat;
             })
         })
-    }; 
+    };
 
+
+    const displayChatList = useMemo(()=>{
+        if(!searchQuery.trim()){
+            return chatList;
+        }
+        const query = searchQuery.toLowerCase().trim();
+        const matchingChats = chatList.filter((chat)=>{
+            const otherUser = userId ? chat.users.find(u => String(u._id) !== userId) : null;
+            const otherUserName = otherUser?.username??"Guest";
+            return otherUserName.toLowerCase().includes(query)
+        });
+
+        const nonMatchingChats = chatList.filter((chat)=>{
+            const otherUser = userId ? chat.users.find(u => String(u._id) !== userId) : null;
+            const otherUserName = otherUser?.username??"Guest";
+            return !otherUserName.toLowerCase().includes(query)
+        });
+        return[...matchingChats,...nonMatchingChats]
+    },[chatList,searchQuery,userId]);
 
 
 
     return<><div className="flex-1 overflow-y-auto px-2">
         {
-            chatList.map((chat)=>{
+            displayChatList.map((chat)=>{
 
                 const otherUser = userId ? chat.users.find(u => String(u._id) !== userId) : null;
                 const otherUserName = otherUser?.username??"Guest" ;
@@ -53,7 +74,7 @@ function ChatList({}){
 
                 const lastMessagePreview = chat.lastMessage?.content ?? "no messages yet" ;
 
-            return <div key={chat._id}  className="py-1" onClick={()=>{handleSelectChat(chat)}}>
+            return <motion.div key={chat._id} layout  transition={{layout: {duration: 0.3,ease: "easeInOut"}}}  className="py-1" onClick={()=>{handleSelectChat(chat)}}>
 
                 <button className={`w-full p-3 flex items-start gap-3 rounded-2xl relative text-left group transition-all duration-300 ease-out active:scale-[0.98]
                     ${isActive ? "bg-surface-container-highest/60 shadow-sm" : "hover:bg-surface-container-high/50"}`}>
@@ -86,7 +107,7 @@ function ChatList({}){
                         {chat.unreadCount>0 &&<span className="absolute bottom-3 right-2 flex items-center justify-center w-5 h-5 rounded-full bg-primary text-on-primary font-label-sm text-[10px] font-bold shadow-[0_0_8px_rgba(189,194,255,0.4)] z-10">{chat.unreadCount}</span>}
                     </div>
                     </button>
-                </div>
+                </motion.div>
                 
 
             })
