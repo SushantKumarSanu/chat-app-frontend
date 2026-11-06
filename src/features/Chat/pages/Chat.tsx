@@ -7,9 +7,10 @@ import useChatRoomSync from "../hooks/useChatRoomSync.js";
 import useChatInitialization from "../hooks/useChatInitialization.js"
 import useMessageInitialization from "../hooks/useMessageInitialization.js";
 import useIncomingMessageSync from "../hooks/useIncomingMessageSync.js";
+import useSocketError from "../hooks/useSocketError.js";
 
 function Chat(){
-
+    useSocketError();
     const {loading} = useChatInitialization();
     useChatRoomSync();
     const {messageLoading} = useMessageInitialization();
