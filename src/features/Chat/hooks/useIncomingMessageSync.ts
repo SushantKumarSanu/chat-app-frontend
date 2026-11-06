@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket } from "../../../services/socket";
 import { updateChatOnNewMessage } from "../utils/chatHelpers";
 import useUserStore from "../../../app/store/userStore";
@@ -45,12 +45,101 @@ function useIncomingMessageSync(){
     const updateMessages = useChatStore(state=>state.updateMessages);
     const updateChatList = useChatStore(state=>state.updateChatList);
 
+    const recievedAttemptCounter = useRef(new Map<string,number>());
+
+    const readAttemptCounter = useRef(new Map<string,number>());
+
+    const sendMessageRead = (NewMessage:Message)=>{
+        console.log("ack message read run");
+        let currentAttempt = readAttemptCounter.current.get(NewMessage._id);
+        if(currentAttempt===undefined){
+            readAttemptCounter.current.set(NewMessage._id,0);
+            currentAttempt = 0;
+        };
+        if(currentAttempt>=5){
+            console.log("last ack ");
+            readAttemptCounter.current.delete(NewMessage._id);
+            return;
+        }
+        currentAttempt++;
+        readAttemptCounter.current.set(NewMessage._id,currentAttempt);
+
+        socket.timeout(5000).emit("message read",{message:NewMessage._id},
+            (err:Error,response:{success:boolean,code:string})=>{
+                if(err){
+                    console.log("message read event ack didn't arrvie");
+                    return sendMessageRead(NewMessage);
+                }else if(response.success){
+                    console.log("message read event succeed",response);
+                    readAttemptCounter.current.delete(NewMessage._id);
+                    return
+                }else if(response.code==="INVALID_MESSAGE"){
+                            console.log(" Invalid message id ",response);
+                            readAttemptCounter.current.delete(NewMessage._id);
+                        }else if(response.code==="NOT_AUTHENTICATED"){
+                            console.log("Need to login again",response);
+                            readAttemptCounter.current.delete(NewMessage._id);
+                        }else if(response.code==="MESSAGE_NOT_FOUND"){
+                            console.log("Message doesn't exists anymore.",response);
+                            readAttemptCounter.current.delete(NewMessage._id);
+                        }else if(response.code==="INTERNAL_ERROR"){
+                            console.log("Can't process this operation right now.",response);
+                            readAttemptCounter.current.delete(NewMessage._id);
+                        }else if(response.code==="CHAT_NOT_FOUND"){
+                            console.log("Can't process this operation right now.",response);
+                            readAttemptCounter.current.delete(NewMessage._id);   
+                        }
+            }
+        );
+    }
+
+    const sendMessageRecieved = (NewMessage:{"_id":string})=>{
+
+        console.log("ack message  recieved run");
+
+
+        let currentAttempt = recievedAttemptCounter.current.get(NewMessage._id);
+
+        if(currentAttempt===undefined){
+            recievedAttemptCounter.current.set(NewMessage._id,0);
+            currentAttempt = 0 ;
+        }
+        if(currentAttempt>=5){
+            console.log("last ack ");
+            recievedAttemptCounter.current.delete(NewMessage._id);
+            return; 
+        };
+        currentAttempt++;
+
+        recievedAttemptCounter.current.set(NewMessage._id,currentAttempt);
+
+        socket.timeout(5000).emit("message recieved",{message:NewMessage._id},
+                    (err:Error,response:{success:boolean,code:string})=>{
+                        if(err){
+                            sendMessageRecieved(NewMessage);
+                        }else if(response.success){
+                            console.log("message receuved event done successfully",response)
+                            recievedAttemptCounter.current.delete(NewMessage._id);
+                        }else if(response.code==="INVALID_MESSAGE"){
+                            console.log(" Invalid message id ",response);
+                            recievedAttemptCounter.current.delete(NewMessage._id);
+                        }else if(response.code==="NOT_AUTHENTICATED"){
+                            console.log("Need to login again",response);
+                            recievedAttemptCounter.current.delete(NewMessage._id);
+                        }else if(response.code==="MESSAGE_NOT_FOUND"){
+                            console.log("Message doesn't exists anymore.",response);
+                            recievedAttemptCounter.current.delete(NewMessage._id);
+
+                        }else if(response.code==="INTERNAL_ERROR"){
+                            console.log("Can't process this operation right now.",response);
+                            recievedAttemptCounter.current.delete(NewMessage._id);
+                        }
+                    });
+
+    }
 
     useEffect(()=>{
         if(!user) return;
-        
-
-
         const handleMessage = ({message:NewMessage,chat:reqChat}:{message:Message,chat:ReqChat})=>{
             
             const userId = String(user._id);
@@ -60,11 +149,11 @@ function useIncomingMessageSync(){
 
             console.log("new message handler and its NewMessage",NewMessage)
             console.log("type of reqChat:",reqChat)
+
+
             if(!isSender){
-                socket.emit("message recieved",{message:NewMessage._id,user:user?._id});
+                sendMessageRecieved(NewMessage);
             }
-
-
             if(String(reqChat?._id) === activeChat?._id){
                 updateActiveChat(chat=>
                     updateChatOnNewMessage({
@@ -75,19 +164,7 @@ function useIncomingMessageSync(){
                         lastMessage : reqChat.lastMessage                        
                     })
                 );
-                // setActiveChat(prev=>
-
-                //     updateChatOnNewMessage({
-                //         chat : prev ,
-                //         isSender : isSender ,
-                //         messageId : NewMessage._id ,
-                //         userId : user._id ,
-                //         lastMessage : reqChat.lastMessage
-                //     })
-
-                // );
-
-                // setMessages(prev=>[...prev,NewMessage]);   
+ 
                 updateMessages(messages=>[...messages,NewMessage]);
 
                 updateChatList(chatList=>{
@@ -106,29 +183,10 @@ function useIncomingMessageSync(){
 
                     })
                 })
-                // setChatlist(prev=>{
-                //     return prev.map((chat)=>{
 
-                //         if( String(chat._id)===newMessageChat ){
-                            
-                //             return  updateChatOnNewMessage({
-                //                         chat:chat ,
-                //                         isSender:isSender ,
-                //                         messageId:NewMessage._id ,
-                //                         userId: userId ,
-                //                         lastMessage : reqChat.lastMessage
-                //                 });
-
-                //         }else{
-
-                //             return chat ;
-
-                //         }
-                //     })
-                // });
-
-
-                newMessageSender !== userId && socket.emit("message read",{message:NewMessage,user:user?._id});
+                if(newMessageSender !== userId){
+                    sendMessageRead(NewMessage);
+                }
 
             }else{
 
@@ -150,27 +208,7 @@ function useIncomingMessageSync(){
                         : chat
                     )
                 );
-            //     setChatlist(prev=>
 
-            //         prev.map(chat=>
-
-            //             String(chat._id) === newMessageChat
-            //             ?{
-            //                 ...chat,
-            //                 lastMessage:{
-            //                 ...chat.lastMessage,
-            //                 messageId:NewMessage._id,
-            //                 sender:NewMessage.sender._id,
-            //                 content:NewMessage.content,
-            //             },
-            //             unreadCount:chat.unreadCount+1
-            //         }
-
-            //         : chat
-
-            //     )
-
-            // );
 
             }
     
